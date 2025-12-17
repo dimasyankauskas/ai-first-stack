@@ -53,12 +53,12 @@ I selected these tools not just for performance, but for **developer experience*
 
 | Component | Technology | Why I Chose It |
 | :-- | :-- | :-- |
+| **Build Engine** | **Antigravity + Cursor** | **The "Architect" Workflow.** Google Antigravity for 0-to-1 agentic orchestration; Cursor for high-speed, tactile code refinement. |
 | **Frontend** | **Next.js 16** | The standard for React production apps. |
 | **Backend** | **PocketBase** | SQLite-based BaaS. Zero latency, instant feedback loops. |
 | **Deployment** | **Dokploy** | Self-hosted PaaS. The simplicity of Vercel on your own VPS. |
 | **Container** | **Docker** | Consistency across Dev and Prod. |
 | **AI/ML** | **Ollama / Gemini** | Local LLMs for privacy; Gemini for reasoning. |
-| **Editor** | **Cursor** | AI-native coding to move at the speed of thought. |
 
 ***
 
