@@ -25,7 +25,7 @@ Create in project root:
 # PocketBase Dockerfile - WITH JAVASCRIPT HOOKS SUPPORT
 ARG CACHE_BUST=2025-12-17
 
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.5-alpine AS builder
 ARG POCKETBASE_VERSION=0.34.2
 
 RUN apk add --no-cache git ca-certificates file
@@ -65,7 +65,7 @@ CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
 Create in `frontend/` folder:
 
 ```dockerfile
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat

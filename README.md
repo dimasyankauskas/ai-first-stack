@@ -121,7 +121,7 @@ dokploy-stack/
 
 ### Backend
 
-- **PocketBase v0.34.2** (requires Go 1.24+)
+- **PocketBase v0.34.2** (requires Go 1.25.5+)
 - Built from `examples/base` for JavaScript hooks support
 - **SQLite** embedded database
 - **Real-time subscriptions** out of the box
@@ -175,7 +175,7 @@ git submodule update --remote docs/templates
 
 - ✅ PocketBase built from source with JS hooks
 - ✅ Multi-stage builds for small images
-- ✅ Go 1.24 for PocketBase v0.34.2
+- ✅ Go 1.25.5 for PocketBase v0.34.2
 - ✅ `CGO_ENABLED=0` (pure Go SQLite)
 - ✅ Binary verification in build
 

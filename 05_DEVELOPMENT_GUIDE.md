@@ -29,7 +29,7 @@
 |-----------|---------|-----------|--------|
 | **Next.js** | 16.0.10 | N/A | ✅ Latest |
 | **PocketBase** | 0.34.2 | Current | ✅ Latest Stable |
-| **Go** | 1.23 | N/A | ✅ Latest |
+| **Go** | 1.25.5 | N/A | ✅ Latest |
 | **Alpine** | 3.21 | May 2026 | ✅ Stable |
 
 ### Architecture: Docker Compose via Dokploy
@@ -68,7 +68,7 @@ project/
 ARG CACHE_BUST=2025-12-17
 
 # Stage 1: Build PocketBase from source
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.5-alpine AS builder
 ARG POCKETBASE_VERSION=0.34.2
 ARG CACHE_BUST
 
@@ -109,7 +109,7 @@ CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
 *Used for the Frontend Service*
 
 ```dockerfile
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat

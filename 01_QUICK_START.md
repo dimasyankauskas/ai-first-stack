@@ -79,7 +79,7 @@ npm install lucide-react  # Icons
 **Create `frontend/Dockerfile`:**
 
 ```dockerfile
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
@@ -153,7 +153,7 @@ module.exports = nextConfig;
 ARG CACHE_BUST=2025-12-17
 
 # Stage 1: Build PocketBase from source
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.5-alpine AS builder
 
 ARG POCKETBASE_VERSION=0.34.2
 ARG CACHE_BUST

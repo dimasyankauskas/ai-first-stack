@@ -17,7 +17,7 @@
 ARG CACHE_BUST=2025-12-16
 
 # Stage 1: Build PocketBase from source
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.5-alpine AS builder
 
 ARG POCKETBASE_VERSION=0.34.2
 ARG CACHE_BUST

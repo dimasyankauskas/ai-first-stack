@@ -1,7 +1,7 @@
 # Next.js Dockerfile Template
 # Optimized for standalone output and Docker deployment
 
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 
 # Install dependencies
 FROM base AS deps

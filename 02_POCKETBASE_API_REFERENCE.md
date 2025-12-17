@@ -366,7 +366,7 @@ const token = $security.createJWT({
 | Hook pattern | `onAfterBootstrap((e) => {})` | `onBootstrap((e) => { e.next(); })` |
 | Route params | `"/hello/:name"` | `"/hello/{name}"` |
 | Request data | `info.data` | `info.body` |
-| Collection schema | `collection.schema` | Still `collection.schema` ✅ |
+| Collection schema | `collection.schema` | Still `collection.fields` ✅ |
 
 ---
 
