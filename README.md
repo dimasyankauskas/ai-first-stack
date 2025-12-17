@@ -1,172 +1,149 @@
-# 🚀 Dokploy Stack
+<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 
-> **A battle-tested deployment template for modern web apps**  
-> Created by **Dimas** ([@dimasyankauskas](https://github.com/dimasyankauskas))
+# 🚀 Dokploy Stack: The "Zero-to-Ship" Infrastructure
 
----
+> **A battle-tested deployment template for modern AI & web apps**
+> *Architected for speed by [Dimas](https://github.com/dimasyankauskas)*
+
+***
+
+## 💡 The "Why": Solving the Velocity Problem
+
+As a **Head of Product**, my job is to maximize **product velocity**—reducing the time between an idea and a shipped feature. Yet, I constantly see teams losing days to "infra thrash"—Docker builds failing, SSL headaches, and complex routing.
+
+I built **Dokploy Stack** to productize infrastructure. It is a repeatable, self-hosted template designed for **zero latency and massive build velocity**.
+
+**The Outcome:**
+> In practice, teams using this template cut initial deployment setup **from weeks to hours**, allowing engineers to focus on shipping value rather than wrestling with YAML.
+
+***
 
 ## 👨‍💻 About the Author
 
-I'm **Dimas** — a **Senior Product & UX Strategy Leader** based in the **San Francisco Bay Area**, with nearly **two decades of experience** building and scaling products at startups.
+I'm **Dimas** — a **Head of Product & UX Design** based in the **San Francisco Bay Area** with ~20 years of experience. I specialize in building "0-to-1" products and scaling AI-first teams.
 
-I'm a **strategic product architect** and **hands-on builder** who bridges the gap between vision and execution. I believe the future of product development is **AI-native**—and I am defining that future, not just reacting to it.
+I operate as a **Strategic Player-Coach**. While my primary focus is vision, portfolio strategy, and cross-functional alignment, I remain hands-on with code and design to prototype complex systems before handing them off to engineering.
 
-**What I'm Working On:**
+**My Product Philosophy:**
+* **Speed is functionality.** If you can't ship it, the design doesn't matter.
+* **AI-Native.** AI isn't a feature; it's the core mechanic.
+* **Full-Stack Fluency.** Understanding the stack allows me to design better constraints and clearer requirements.
 
-| Domain | What This Means |
-|--------|-----------------|
-| 🧠 **AI-First Product Strategy** | Architecting products where AI is foundational, not bolted on |
-| 🤖 **Multi-Agent Orchestration** | Designing systems where autonomous agents collaborate at scale |
-| 👥 **Human-in-the-Loop Design** | Ensuring human agency remains central to AI-powered experiences |
-| ✍️ **System Prompt Engineering** | Crafting the instruction architectures that drive intelligent behavior |
-| 🔄 **Self-Improving Systems** | Building feedback loops that make products smarter over time |
-| 🎨 **Design Systems & Product-Led Growth** | Creating scalable design languages and products that sell themselves |
-| 🔐 **Responsible AI** | Building AI that's fair, transparent, and actually helpful |
-| 🛠️ **AI Team Enablement** | Helping product & design teams adopt AI tools for seamless future transition |
+### 🔬 What I'm Building & Leading
 
-**Tech I'm Excited About:**
-LLMs, RAG, LangChain, Generative AI, Embeddings, Local Models (Ollama ❤️)
+| Focus Area | The Strategic Value |
+| :-- | :-- |
+| 🧠 **AI-First Strategy** | Defining bets where AI is the core mechanic, aligning Data, UX, and Infra. |
+| 🤖 **Multi-Agent Systems** | Architecting debuggable agent workflows that are reliable enough for production. |
+| 👥 **Human-in-the-Loop** | Designing review flows where humans guide AI, ensuring safety and trust. |
+| 🔄 **Self-Improving Products** | Building feedback loops where usage data automatically reduces technical debt. |
+| 🎨 **Design Systems** | Creating scalable languages that allow Engineering to ship UI without constant pixel-pushing. |
 
-**Industries I've Built For:**
-- 🏥 **Healthcare AI & SaaS** (5+ yrs): Remote Patient Monitoring, Clinical Dashboards, & ML Data Ops
-- 🛍️ Consumer Products & Enterprise SaaS
-- 📚 Education & Learning Platforms
-- 🌐 Community & Social Products
+***
 
-**My Philosophy:**
-
-> *AI should give us **more life, less work**.*
-
-AI has fundamentally changed what's possible. What once required **months of coordination** can now be accomplished in **hours**. This isn't just efficiency — it's a paradigm shift in how we express creativity, strategy, and vision.
-
-I believe technology should empower communities, eliminate friction from daily life, and free humans to focus on creativity, connection, and meaningful work.
-
-*We are in the midst of the most significant platform shift in history. The barrier between idea and reality has never been thinner.* ✨
-
-I partner with startups and product teams to integrate AI at the foundational level and build truly AI-native experiences.
-
-### 🎮 Fun Fact
+## 🎮 Fun Fact: "Mobile-First" Prototyping
 
 <img src="ai-eureka-moment.jpg" alt="AI having a eureka moment" width="300" align="right" style="margin-left: 20px; margin-bottom: 10px;">
 
-I build **fully functional applications on my phone** using **Google AI Studio** — while waiting at red lights, hiking through nature, anywhere. I prototype multi-agent systems, iterate on product ideas, and ship features without ever opening a laptop.
+I often prototype **full-stack, multi-agent applications on my phone** using **Google AI Studio** — going from idea to deployed demo in a single session.
 
-I describe what I want to my AI agents, and watch the code appear.
+I describe the system and constraints to my AI agents, then iterate on code and UX until it’s ready for the team. Capturing those "AI eureka moments" is how I test whether a product vision is clear and shippable before we invest engineering hours.
 
-*This is an insane and amazing time to be building products.* 🚀
+***
 
-**→ That moment when even your AI agent gets excited:**  
-*"FOUND IT! This is the smoking gun!"*  
-*(Yes, LLMs can have eureka moments too. Capturing that lightning is what I do best.)* 😄
+## 🛠️ The Tech Stack
 
-*Deeply grateful to the Google DeepMind team for tools that let me express creativity, strategy, and product thinking from anywhere.*
+I selected these tools not just for performance, but for **developer experience** and **maintainability**.
 
-### 🛠️ My Development Stack
+| Component | Technology | Why I Chose It |
+| :-- | :-- | :-- |
+| **Frontend** | **Next.js 16** | The standard for React production apps. |
+| **Backend** | **PocketBase** | SQLite-based BaaS. Zero latency, instant feedback loops. |
+| **Deployment** | **Dokploy** | Self-hosted PaaS. The simplicity of Vercel on your own VPS. |
+| **Container** | **Docker** | Consistency across Dev and Prod. |
+| **AI/ML** | **Ollama / Gemini** | Local LLMs for privacy; Gemini for reasoning. |
+| **Editor** | **Cursor** | AI-native coding to move at the speed of thought. |
 
-| Tool | Purpose |
-|------|---------|
-| **Cursor** | AI-native code editor - my daily driver |
-| **Antigravity** (Gemini) | AI coding agent that does the heavy lifting |
-| **Google AI Studio** | Mobile prototyping powerhouse - I build apps from my phone |
-| **Gemini CLI** | Terminal-based AI for quick tasks |
-| **Ollama** | Local LLMs - a personal favorite ❤️ |
-| **LangChain** | LLM orchestration and RAG pipelines |
-| **Next.js** | React framework for production apps |
-| **PocketBase** | Backend-as-a-Service with real-time |
-| **Docker** | Containerization for reliable deploys |
-| **Dokploy** | Self-hosted PaaS (Heroku/Vercel alternative) |
-| **Self-hosted VPS** | Full control over my infrastructure |
+***
 
-### 📝 A Note on This Repo
+## 🎯 What This Repository Delivers
 
-Most of my work involves proprietary products and stealth startups, so my public GitHub shows only a slice of what I build. This template is one example of how I systematize the hard stuff — so I can focus on what matters: shipping products that people love.
+**Dokploy Stack** is a comprehensive template to deploy a **Next.js + PocketBase** app with fully automated SSL and routing.
 
----
+### Key Capabilities
+* ✅ **Production-Ready:** Traefik routing, Let's Encrypt SSL, and Health Checks.
+* ✅ **PocketBase w/ JS Hooks:** Built from source (Go 1.24) to enable custom backend logic.
+* ✅ **Mobile Architected:** Includes API patterns for iPhone Shortcuts and external clients.
+* ✅ **Developer Experience:** One-command setup for local dev and production.
 
-## 💡 Why This Exists
-
-As a product person building multiple AI-first projects, I ran into the same infrastructure problems repeatedly: Docker builds failing, Traefik routing issues, PocketBase configurations, SSL certificates...
-
-Rather than solving these problems from scratch every time, I **systematized everything** into this template.
-
-**This is the guide I wish I had when I started.** It will save you days of frustration.
-
----
-
-## 🎯 What This Is
-
-**Dokploy Stack** is a comprehensive template and documentation set for deploying:
-
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Frontend** | Next.js 16 (App Router) | React framework with SSR |
-| **Backend** | PocketBase v0.34.2 | SQLite-based BaaS with JS hooks |
-| **Hosting** | Dokploy | Self-hosted PaaS with Traefik |
-| **Container** | Docker Compose | Multi-service orchestration |
-| **SSL** | Let's Encrypt (via Traefik) | Automatic HTTPS |
-| **State** | Zustand | Frontend state management |
-
----
+***
 
 ## 📁 Repository Structure
 
-```
+```text
 dokploy-stack/
 │
 ├── 📖 DOCUMENTATION
-│   ├── 01_QUICK_START.md           # Get started in 30 minutes
-│   ├── 02_POCKETBASE_API_REFERENCE.md  # Complete PocketBase API guide
-│   ├── 03_POCKETBASE_QUICK_REFERENCE.md # One-page cheat sheet
-│   ├── 04_DOCKER_BUILD_GUIDE.md    # Docker build troubleshooting
-│   ├── 05_DEVELOPMENT_GUIDE.md     # Local development setup
-│   ├── 06_DOKPLOY_DEPLOYMENT.md    # Production deployment guide
-│   ├── 07_GIT_WORKFLOW.md          # Git branching strategy
-│   ├── 08_LOCAL_DEVELOPMENT.md     # Local dev environment
-│   └── IPHONE_SHORTCUT_SETUP.md    # Mobile Shortcuts API
+│   ├── 01_QUICK_START.md                 # Get started in 30 minutes
+│   ├── 02_POCKETBASE_API_REFERENCE.md    # Complete PocketBase API guide
+│   ├── 03_POCKETBASE_QUICK_REFERENCE.md  # One-page cheat sheet
+│   ├── 04_DOCKER_BUILD_GUIDE.md          # Docker build troubleshooting
+│   ├── 05_DEVELOPMENT_GUIDE.md           # Local development setup
+│   ├── 06_DOKPLOY_DEPLOYMENT.md          # Production deployment guide
+│   ├── 07_GIT_WORKFLOW.md                # Git branching strategy
+│   ├── 08_LOCAL_DEVELOPMENT.md           # Local dev environment
+│   └── IPHONE_SHORTCUT_SETUP.md          # Mobile Shortcuts API
 │
 ├── 📄 TEMPLATES
-│   └── FILE_TEMPLATES.md           # Copy-paste ready templates
+│   └── FILE_TEMPLATES.md                 # Copy-paste ready templates
 │
 ├── 📋 REFERENCES
 │   ├── MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md
-│   └── README.md                   # This file
+│   └── README.md                         # This file
 │
 └── 🔧 STARTER FILES (in templates/)
-    ├── Dockerfile.pocketbase      # PocketBase with JS hooks
-    ├── Dockerfile.frontend        # Next.js standalone build
-    ├── docker-compose.yml         # Local development
-    ├── docker-compose.prod.yml    # Production (Dokploy)
-    └── .env.example               # Environment template
+    ├── Dockerfile.pocketbase             # PocketBase with JS hooks
+    ├── Dockerfile.frontend               # Next.js standalone build
+    ├── docker-compose.yml                # Local development
+    ├── docker-compose.prod.yml           # Production (Dokploy)
+    └── .env.example                      # Environment template
 ```
 
----
+
+***
 
 ## 🔧 Tech Stack Details
 
 ### Frontend
-- **Next.js 16** with App Router (not Pages Router)
+
+- **Next.js 16** with App Router
 - **TypeScript** for type safety
 - **Tailwind CSS** for styling
 - **Zustand** for state management
 - **Standalone output** for Docker deployment
 
+
 ### Backend
+
 - **PocketBase v0.34.2** (requires Go 1.24+)
-- **Built from `examples/base`** for JavaScript hooks support
+- Built from `examples/base` for JavaScript hooks support
 - **SQLite** embedded database
 - **Real-time subscriptions** out of the box
 
-### Infrastructure
-- **Dokploy** - Self-hosted Heroku/Vercel alternative
-- **Traefik** - Automatic routing & SSL
-- **Docker Compose** - Multi-container orchestration
-- **Let's Encrypt** - Free SSL certificates
 
----
+### Infrastructure
+
+- **Dokploy** – Self-hosted Heroku/Vercel alternative
+- **Traefik** – Automatic routing \& SSL
+- **Docker Compose** – Multi-container orchestration
+- **Let's Encrypt** – Free SSL certificates
+
+***
 
 ## 🚀 How To Use This Repository
 
-### Option 1: Clone What You Need (Recommended for first use)
+### Option 1: Clone What You Need (Recommended)
+
 ```bash
 # Clone the entire template
 git clone https://github.com/dimasyankauskas/dokploy-stack.git
@@ -176,9 +153,10 @@ cp dokploy-stack/templates/* your-project/
 cp dokploy-stack/docs/* your-project/docs/
 ```
 
-### Option 2: Add as Git Submodule (For ongoing reference)
+
+### Option 2: Add as Git Submodule
+
 ```bash
-# Add to existing project
 cd your-project
 git submodule add https://github.com/dimasyankauskas/dokploy-stack.git docs/templates
 
@@ -186,47 +164,56 @@ git submodule add https://github.com/dimasyankauskas/dokploy-stack.git docs/temp
 git submodule update --remote docs/templates
 ```
 
+
 ### Option 3: Use as Template Repository
+
 1. Click **"Use this template"** on GitHub
 2. Create your new project
 3. Customize the templates for your domain
 
----
+***
 
-## ✅ Features & Solutions Included
+## ✅ Features \& Solutions Included
 
 ### Docker Builds
+
 - ✅ PocketBase built from source with JS hooks
 - ✅ Multi-stage builds for small images
 - ✅ Go 1.24 for PocketBase v0.34.2
-- ✅ CGO_ENABLED=0 (pure Go SQLite)
+- ✅ `CGO_ENABLED=0` (pure Go SQLite)
 - ✅ Binary verification in build
 
+
 ### Deployment
+
 - ✅ Traefik labels for automatic routing
 - ✅ Let's Encrypt SSL configuration
 - ✅ Health checks for containers
 - ✅ Volume mounts for persistence
 - ✅ Environment variable management
 
+
 ### PocketBase
+
 - ✅ Collection schema enforcement on bootstrap
 - ✅ Custom API routes with authentication
 - ✅ Token-based auth for mobile apps
 - ✅ Real-time subscriptions
 - ✅ Migration from v0.22 patterns documented
 
+
 ### Development
+
 - ✅ Local Docker setup
 - ✅ Hot-reload configuration
 - ✅ Environment separation (dev/prod)
 - ✅ Git workflow with QA branch
 
----
+***
 
 ## 📝 Quick Start Checklist
 
-```
+```text
 □ Clone this repository
 □ Copy templates to your project
 □ Update domain names in docker-compose.prod.yml
@@ -237,31 +224,35 @@ git submodule update --remote docs/templates
 □ Test frontend connection
 ```
 
----
+
+***
 
 ## 🙏 Acknowledgments
 
 This documentation was battle-tested on multiple production deployments:
+
 - Self-hosted VPS (Dokploy)
 - PocketBase with JavaScript hooks
 - Next.js App Router applications
 - iPhone Shortcuts integrations
 
----
+***
 
 ## 📄 License
 
-MIT License - Use freely in your projects.
+MIT License – Use freely in your projects.
 
----
+***
 
 ## 🐛 Found a Problem?
 
 If you find issues or have improvements:
+
 1. Open an issue
 2. Submit a PR
 3. Star the repo if it helped you!
 
----
+***
 
 *Architected with vision, precision, and purpose by Dimas* 🎉
+
