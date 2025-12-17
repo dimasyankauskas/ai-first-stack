@@ -1,0 +1,68 @@
+# PocketBase Dockerfile Template
+# Build from examples/base for JavaScript hooks support
+# PocketBase v0.34.2 requires Go 1.24+
+
+ARG CACHE_BUST=2025-12-17
+
+# Stage 1: Build PocketBase from source
+FROM golang:1.24-alpine AS builder
+
+ARG POCKETBASE_VERSION=0.34.2
+ARG CACHE_BUST
+
+# Print build info
+RUN echo "=== BUILD INFO ===" && \
+    echo "Architecture: $(uname -m)" && \
+    echo "PocketBase: v${POCKETBASE_VERSION}" && \
+    echo "=================="
+
+# Install required tools
+RUN apk add --no-cache git ca-certificates file
+
+# Clone PocketBase and checkout version
+RUN git clone https://github.com/pocketbase/pocketbase.git /app && \
+    cd /app && \
+    git checkout v${POCKETBASE_VERSION}
+
+WORKDIR /app/examples/base
+
+# Build with CGO_ENABLED=0 (Pure Go SQLite)
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+RUN go build -v -o /pocketbase . && \
+    echo "=== BINARY INFO ===" && \
+    ls -la /pocketbase && \
+    file /pocketbase && \
+    echo "=================="
+
+# Stage 2: Runtime
+FROM alpine:3.21
+
+# Install runtime dependencies
+RUN apk add --no-cache ca-certificates wget
+
+# Copy built PocketBase
+COPY --from=builder /pocketbase /pb/pocketbase
+
+RUN chmod +x /pb/pocketbase && \
+    echo "=== RUNTIME VERIFY ===" && \
+    file /pb/pocketbase && \
+    echo "======================"
+
+# Create directories
+RUN mkdir -p /pb/pb_hooks /pb/pb_data
+
+# Copy hooks (update path as needed)
+COPY pb_hooks /pb/pb_hooks
+
+WORKDIR /pb
+EXPOSE 8090
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:8090/api/health || exit 1
+
+# Start PocketBase
+CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]

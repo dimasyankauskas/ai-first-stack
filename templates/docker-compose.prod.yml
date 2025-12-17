@@ -1,0 +1,63 @@
+# Docker Compose - Production (Dokploy)
+# Replace YOUR_DOMAIN and YOUR_PROJECT with your values
+
+services:
+  pocketbase:
+    build:
+      context: .
+      dockerfile: Dockerfile.pocketbase
+    restart: always
+    ports:
+      - 8090
+    volumes:
+      - pocketbase_data:/pb/pb_data
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8090/api/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.YOUR_PROJECT-pocketbase.rule=Host(`api.YOUR_DOMAIN`)"
+      - "traefik.http.routers.YOUR_PROJECT-pocketbase.entrypoints=websecure"
+      - "traefik.http.routers.YOUR_PROJECT-pocketbase.tls.certResolver=letsencrypt"
+      - "traefik.http.services.YOUR_PROJECT-pocketbase.loadbalancer.server.port=8090"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL}
+    restart: always
+    ports:
+      - 3000
+    environment:
+      - NEXT_PUBLIC_POCKETBASE_URL=${NEXT_PUBLIC_POCKETBASE_URL}
+      - NODE_ENV=production
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.YOUR_PROJECT-frontend.rule=Host(`YOUR_DOMAIN`) || Host(`www.YOUR_DOMAIN`)"
+      - "traefik.http.routers.YOUR_PROJECT-frontend.entrypoints=websecure"
+      - "traefik.http.routers.YOUR_PROJECT-frontend.tls.certResolver=letsencrypt"
+      - "traefik.http.services.YOUR_PROJECT-frontend.loadbalancer.server.port=3000"
+
+volumes:
+  pocketbase_data:
+
+
+networks:
+  dokploy-network:
+    external: true
