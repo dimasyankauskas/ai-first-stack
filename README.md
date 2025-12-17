@@ -7,7 +7,7 @@
 
 ## 💡 The "Why": Solving the Velocity Problem
 
-As a **Head of Product**, my job is to maximize **product velocity**—reducing the time between an idea and a shipped feature. Yet, I constantly see teams losing days to "infra thrash"—Docker builds failing, SSL headaches, and complex routing.
+As a **Head of Product**, my job is to maximize **product velocity** — reducing the time between an idea and a shipped feature. Yet, I constantly see teams losing days to "infra thrash" — Docker builds failing, SSL headaches, and complex routing.
 
 I built **Dokploy Stack** to productize infrastructure. It is a repeatable, self-hosted template designed for **zero latency and massive build velocity**.
 
@@ -18,7 +18,7 @@ I built **Dokploy Stack** to productize infrastructure. It is a repeatable, self
 
 ## 👨‍💻 About the Author
 
-I'm **Dimas** — a **Head of Product & UX Design** based in the **San Francisco Bay Area** with ~20 years of experience. I specialize in building "0-to-1" products and scaling AI-first teams.
+I'm **Dimas** — a **Head of Product & UX Design** based in the **San Francisco Bay Area** with ~17+ years of experience. I specialize in building "0-to-1" products and scaling AI-first teams.
 
 I operate as a **Strategic Player-Coach**. While my primary focus is vision, portfolio strategy, and cross-functional alignment, I remain hands-on with code and design to prototype complex systems before handing them off to engineering.
 
