@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # 🚀 Dokploy Stack: The "Zero-to-Ship" Infrastructure
 
 > **A battle-tested deployment template for modern AI & web apps**
