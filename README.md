@@ -1,15 +1,15 @@
 # 🚀 Dokploy Stack
 
 > **A battle-tested deployment template for modern web apps**  
-> Created by **Demas** ([@KedarnathaDasBVKS](https://github.com/KedarnathaDasBVKS))
+> Created by **Dimas** ([@dimasyankauskas](https://github.com/dimasyankauskas))
 
 ---
 
 ## 👨‍💻 About the Author
 
-I'm **Demas** — a **Senior Product & UX Strategy Leader** based in the **San Francisco Bay Area**, with nearly **two decades of experience** building and scaling products at startups.
+I'm **Dimas** — a **Senior Product & UX Strategy Leader** based in the **San Francisco Bay Area**, with nearly **two decades of experience** building and scaling products at startups.
 
-I'm not an engineer by training. I'm a **strategic product thinker**, a **builder**, and an **out-of-the-box problem solver** who remains deeply hands-on. Why? Because the future of product development is **AI-first** — and I intend to shape that future, not just react to it.
+I'm a **strategic product architect** and **hands-on builder** who bridges the gap between vision and execution. I believe the future of product development is **AI-native**—and I am defining that future, not just reacting to it.
 
 **What I'm Working On:**
 
@@ -28,6 +28,7 @@ I'm not an engineer by training. I'm a **strategic product thinker**, a **builde
 LLMs, RAG, LangChain, Generative AI, Embeddings, Local Models (Ollama ❤️)
 
 **Industries I've Built For:**
+- 🏥 **Healthcare AI & SaaS** (5+ yrs): Remote Patient Monitoring, Clinical Dashboards, & ML Data Ops
 - 🛍️ Consumer Products & Enterprise SaaS
 - 📚 Education & Learning Platforms
 - 🌐 Community & Social Products
@@ -40,7 +41,7 @@ AI has fundamentally changed what's possible. What once required **months of coo
 
 I believe technology should empower communities, eliminate friction from daily life, and free humans to focus on creativity, connection, and meaningful work.
 
-*Sometimes I can't sleep because I'm too excited about what we can build now.* ✨
+*We are in the midst of the most significant platform shift in history. The barrier between idea and reality has never been thinner.* ✨
 
 I partner with startups and product teams to integrate AI at the foundational level and build truly AI-native experiences.
 
@@ -56,7 +57,7 @@ I describe what I want to my AI agents, and watch the code appear.
 
 **→ That moment when even your AI agent gets excited:**  
 *"FOUND IT! This is the smoking gun!"*  
-*(Yes, LLMs can have eureka moments too. I'm not the only one who gets hyped about debugging.)* 😄
+*(Yes, LLMs can have eureka moments too. Capturing that lightning is what I do best.)* 😄
 
 *Deeply grateful to the Google DeepMind team for tools that let me express creativity, strategy, and product thinking from anywhere.*
 
@@ -168,7 +169,7 @@ dokploy-stack/
 ### Option 1: Clone What You Need (Recommended for first use)
 ```bash
 # Clone the entire template
-git clone https://github.com/KedarnathaDasBVKS/dokploy-stack.git
+git clone https://github.com/dimasyankauskas/dokploy-stack.git
 
 # Copy files you need to your project
 cp dokploy-stack/templates/* your-project/
@@ -179,7 +180,7 @@ cp dokploy-stack/docs/* your-project/docs/
 ```bash
 # Add to existing project
 cd your-project
-git submodule add https://github.com/KedarnathaDasBVKS/dokploy-stack.git docs/templates
+git submodule add https://github.com/dimasyankauskas/dokploy-stack.git docs/templates
 
 # Update submodule later
 git submodule update --remote docs/templates
@@ -263,4 +264,4 @@ If you find issues or have improvements:
 
 ---
 
-*Made with frustration, persistence, and finally success by Demas* 🎉
+*Architected with vision, precision, and purpose by Dimas* 🎉
