@@ -41,8 +41,6 @@ I operate as a **Strategic Player-Coach**. While my primary focus is vision, por
 
 ## 🎮 Fun Fact: "Mobile-First" Prototyping
 
-<img src="ai-eureka-moment.jpg" alt="AI having a eureka moment" width="300" align="right" style="margin-left: 20px; margin-bottom: 10px;">
-
 I often prototype **full-stack, multi-agent applications on my phone** using **Google AI Studio** — going from idea to deployed demo in a single session.
 
 I describe the system and constraints to my AI agents, then iterate on code and UX until it’s ready for the team. Capturing those "AI eureka moments" is how I test whether a product vision is clear and shippable before we invest engineering hours.
