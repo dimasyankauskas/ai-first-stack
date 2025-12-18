@@ -1,76 +1,76 @@
 # 🖥️ Local Development Setup (No Docker Required)
 
-**Run frontend locally while using remote PocketBase on VPS**
+Run the **frontend locally** while using a **remote PocketBase** on your VPS (DEV environment).
+
+> This assumes you have:
+> - DEV + PROD Dokploy services configured as in `06_DOKPLOY_DEPLOYMENT.md` / `07_GIT_WORKFLOW.md`. [file:50][file:51]
+> - PocketBase v0.34.2 and Next.js 16 as defined in `AI_SYSTEM_INSTRUCTIONS.md`. [file:43]
 
 ---
 
-## 📊 Architecture Overview
+## 📊 Architecture overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                     DEVELOPMENT ARCHITECTURE                             │
+│                     DEVELOPMENT ARCHITECTURE                            │
 ├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│  YOUR LOCAL MACHINE (Windows/Mac)                                        │
-│  ┌───────────────────────────────┐                                       │
-│  │  Frontend (Next.js)           │                                       │
-│  │  npm run dev                  │                                       │
-│  │  http://localhost:3000        │───────┐                               │
-│  │                               │       │                               │
-│  │  .env.local file:             │       │ HTTPS API Calls               │
-│  │  NEXT_PUBLIC_POCKETBASE_URL=  │       │                               │
-│  │  https://api.dev.project.com  │       │                               │
-│  └───────────────────────────────┘       │                               │
-│                                          ▼                               │
-│  ════════════════════════════════════════════════════════════════════   │
-│                              INTERNET                                    │
-│  ════════════════════════════════════════════════════════════════════   │
-│                                          │                               │
-│  VPS (Dokploy)                           ▼                               │
-│  ┌─────────────────────────────────────────────────────────────────┐    │
-│  │                                                                  │    │
-│  │  DEV ENVIRONMENT (develop branch)                                │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────┐               │    │
-│  │  │ DEV PocketBase      │  │ DEV Frontend        │               │    │
-│  │  │ api.dev.project.com │  │ dev.project.com     │               │    │
-│  │  │ Port: 8090          │  │ Port: 3000          │               │    │
-│  │  │ [DEV Database]      │  │                     │               │    │
-│  │  └─────────────────────┘  └─────────────────────┘               │    │
-│  │                                                                  │    │
-│  ├──────────────────────────────────────────────────────────────────┤    │
-│  │                                                                  │    │
-│  │  PROD ENVIRONMENT (main branch)                                  │    │
-│  │  ┌─────────────────────┐  ┌─────────────────────┐               │    │
-│  │  │ PROD PocketBase     │  │ PROD Frontend       │               │    │
-│  │  │ api.project.com     │  │ project.com         │               │    │
-│  │  │ Port: 8090          │  │ Port: 3000          │               │    │
-│  │  │ [PROD Database]     │  │                     │               │    │
-│  │  └─────────────────────┘  └─────────────────────┘               │    │
-│  │                                                                  │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-│                                                                          │
+│                                                                         │
+│  YOUR LOCAL MACHINE (Windows/Mac)                                       │
+│  ┌───────────────────────────────┐                                      │
+│  │  Frontend (Next.js)           │                                      │
+│  │  npm run dev                  │                                      │
+│  │  http://localhost:3000        │───────┐                              │
+│  │                               │       │ HTTPS API calls              │
+│  │  .env.local:                  │       │                              │
+│  │  NEXT_PUBLIC_POCKETBASE_URL = │       │                              │
+│  │  https://api.dev.project.com  │       │                              │
+│  └───────────────────────────────┘       │                              │
+│                                         ▼                              │
+│  ======================= INTERNET =======================               │
+│                                         │                              │
+│  VPS (Dokploy)                          ▼                              │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │  DEV ENVIRONMENT (develop branch)                               │   │
+│  │  ┌─────────────────────┐  ┌─────────────────────┐              │   │
+│  │  │ DEV PocketBase      │  │ DEV Frontend        │              │   │
+│  │  │ api.dev.project.com │  │ dev.project.com     │              │   │
+│  │  │ Port: 8090          │  │ Port: 3000          │              │   │
+│  │  │ [DEV Database]      │  │                     │              │   │
+│  │  └─────────────────────┘  └─────────────────────┘              │   │
+│  │                                                               │   │
+│  ├────────────────────────────────────────────────────────────────┤   │
+│  │  PROD ENVIRONMENT (main branch)                                │   │
+│  │  ┌─────────────────────┐  ┌─────────────────────┐              │   │
+│  │  │ PROD PocketBase     │  │ PROD Frontend       │              │   │
+│  │  │ api.project.com     │  │ project.com         │              │   │
+│  │  │ Port: 8090          │  │ Port: 3000          │              │   │
+│  │  │ [PROD Database]     │  │                     │              │   │
+│  │  └─────────────────────┘  └─────────────────────┘              │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🎯 Environment Summary
+## 🎯 Environment summary
 
-| Environment | Where | Frontend URL | Backend URL | Database |
-|-------------|-------|--------------|-------------|----------|
-| **Local Dev** | Your machine | localhost:3000 | → Uses DEV backend | None local |
-| **DEV/QA** | VPS | dev.project.com | api.dev.project.com | DEV data |
-| **Production** | VPS | project.com | api.project.com | PROD data |
+| Environment   | Where        | Frontend URL      | Backend URL                | Database    |
+|--------------|--------------|-------------------|---------------------------|------------|
+| Local Dev    | Your machine | `localhost:3000`  | → uses DEV backend        | none local |
+| DEV / QA     | VPS          | `dev.project.com` | `api.dev.project.com`     | DEV data   |
+| Production   | VPS          | `project.com`     | `api.project.com`         | PROD data  |
+
+For your Prometheus project, `project.com` ↔ `prometheus.buildfutures.ai`. [file:52]
 
 ---
 
-## 📝 Step 1: Set Up Local Environment
+## 📝 Step 1: Local environment
 
-### 1.1 Create Environment File
+### 1.1 Create `frontend/.env.local`
 
-Create `frontend/.env.local`:
+Example for your Prometheus DEV backend:
 
-```bash
+```
 # Point to DEV PocketBase on VPS
 NEXT_PUBLIC_POCKETBASE_URL=https://api.dev.prometheus.buildfutures.ai
 
@@ -79,105 +79,102 @@ GEMINI_API_KEY=your-dev-api-key
 OPENROUTER_API_KEY=your-dev-api-key
 ```
 
-### 1.2 Install Dependencies
+### 1.2 Install dependencies
 
-```bash
+```
 cd frontend
 npm install
 ```
 
-### 1.3 Run Frontend Locally
+### 1.3 Run frontend locally
 
-```bash
+```
 npm run dev
 ```
 
-Open `http://localhost:3000` - your frontend now talks to DEV PocketBase!
+Open `http://localhost:3000` – the frontend now talks to the **DEV** PocketBase on your VPS. [file:52]
 
 ---
 
-## 📝 Step 2: Set Up VPS Environments
+## 📝 Step 2: VPS DEV/PROD environments
 
-### 2.1 Create DNS Records
+### 2.1 DNS records
 
-Add these A records pointing to your VPS IP:
+Point these A records to your VPS IP:
 
 ```
-# DEV Environment
+# DEV environment
 api.dev.prometheus.buildfutures.ai → YOUR_VPS_IP
 dev.prometheus.buildfutures.ai     → YOUR_VPS_IP
 
-# PROD Environment (you already have these)
+# PROD environment
 api.prometheus.buildfutures.ai     → YOUR_VPS_IP
 prometheus.buildfutures.ai         → YOUR_VPS_IP
 ```
 
-### 2.2 Create DEV Compose Service in Dokploy
+### 2.2 DEV Compose service in Dokploy
 
-1. Go to **Projects** → Your Project
-2. Click **+ Create Service** → **Compose**
-3. Configure:
+Create a DEV service (if not already done):
 
-| Setting | Value |
-|---------|-------|
-| Name | `prometheus-dev` |
-| App Name | `prometheus-dev` |
-| Compose Type | Docker Compose |
-| Repository | Same as production |
-| **Branch** | `develop` ← Important! |
-| Compose Path | `./docker-compose.prod.yml` |
+| Setting      | Value                         |
+|-------------|-------------------------------|
+| Name        | `prometheus-dev`              |
+| App Name    | `prometheus-dev`              |
+| Type        | Docker Compose                |
+| Repository  | same as production            |
+| Branch      | `develop`                     |
+| Compose Path| `./docker-compose.prod.yml`   |
 
-### 2.3 Configure DEV Domains
+Domains for this service should match the DNS above:
 
-Add domains for DEV service:
+| Service    | Host                                   | Port | HTTPS |
+|------------|----------------------------------------|------|-------|
+| pocketbase | `api.dev.prometheus.buildfutures.ai`   | 8090 | ON    |
+| frontend   | `dev.prometheus.buildfutures.ai`       | 3000 | ON    |
 
-| Service | Host | Port | HTTPS |
-|---------|------|------|-------|
-| pocketbase | `api.dev.prometheus.buildfutures.ai` | 8090 | ON |
-| frontend | `dev.prometheus.buildfutures.ai` | 3000 | ON |
+### 2.3 DEV environment variables (Dokploy)
 
-### 2.4 Set DEV Environment Variables
-
-```bash
+```
 ADMIN_EMAIL=dev-admin@prometheus.buildfutures.ai
 ADMIN_PASSWORD=<different-from-prod>
 PB_ENCRYPTION_KEY=<different-from-prod>
 NEXT_PUBLIC_POCKETBASE_URL=https://api.dev.prometheus.buildfutures.ai
-GEMINI_API_KEY=<your-api-key>
-OPENROUTER_API_KEY=<your-api-key>
+GEMINI_API_KEY=<your-dev-key>
+OPENROUTER_API_KEY=<your-dev-key>
 ```
 
-### 2.5 Deploy DEV Environment
-
-Click **Deploy** - DEV environment will be created from `develop` branch.
+Deploy the DEV service from Dokploy; it will build from the `develop` branch. [file:50][file:52]
 
 ---
 
-## 📝 Step 3: Create Git Branches
+## 📝 Step 3: Git branches for DEV vs PROD
 
-```bash
-# Make sure you're on main
+If not already configured:
+
+```
+# Start from main
 git checkout main
 
 # Create develop branch
 git checkout -b develop
 
-# Push develop branch to GitHub
+# Push to GitHub
 git push -u origin develop
 ```
 
-Now you have:
-- `main` → Production
-- `develop` → DEV/QA
+Now:
+
+- `main` → production (Dokploy production service watches `main`). [file:51]  
+- `develop` → DEV/QA (Dokploy DEV service watches `develop`).  
 
 ---
 
-## 🔄 Daily Development Workflow
+## 🔄 Daily development workflow
 
-### Morning: Start Work
+### Morning: start work
 
-```bash
-# 1. Pull latest from develop
+```
+# 1. Pull latest DEV branch
 git checkout develop
 git pull origin develop
 
@@ -185,157 +182,150 @@ git pull origin develop
 cd frontend
 npm run dev
 
-# 3. Open localhost:3000 - connected to DEV PocketBase!
+# 3. Open http://localhost:3000 (uses DEV PocketBase)
 ```
 
-### During Day: Make Changes
+### During the day: push to DEV VPS
 
-```bash
-# Make your code changes...
-# The frontend hot-reloads automatically
-
-# When ready to test on VPS:
+```
+# After local testing
 git add -A
 git commit -m "Add new feature"
 git push origin develop
 
-# → Dokploy auto-deploys to DEV environment
-# → Test at dev.prometheus.buildfutures.ai
+# → Dokploy auto-deploys to DEV
+# → Test at https://dev.prometheus.buildfutures.ai
 ```
 
-### Ready for Production
+### Ready for production (high-level)
 
-```bash
-# After testing on DEV environment
+Later, follow `07_GIT_WORKFLOW.md`:
+
+```
 git checkout main
 git merge develop
 git push origin main
-
 # → Dokploy auto-deploys to PROD
-# → Live at prometheus.buildfutures.ai
 ```
 
 ---
 
-## 🔧 Switching Between Environments
+## 🔧 Switching local backend
 
-### Local → DEV Backend (default)
+### Local → DEV backend (default)
 
 `frontend/.env.local`:
-```bash
+
+```
 NEXT_PUBLIC_POCKETBASE_URL=https://api.dev.prometheus.buildfutures.ai
 ```
 
-### Local → PROD Backend (testing only!)
+### Local → PROD backend (only when necessary)
 
-`frontend/.env.local`:
-```bash
+```
 NEXT_PUBLIC_POCKETBASE_URL=https://api.prometheus.buildfutures.ai
 ```
 
-> ⚠️ **Warning**: Be careful when pointing to PROD - you're working with real data!
+> ⚠️ Be careful with PROD: you are working on real data and users.
 
 ---
 
-## 📊 Environment Variables Reference
+## 📊 Environment variables reference
 
-### Local Development (.env.local)
+### Local development (`frontend/.env.local`)
 
-```bash
-# Required - API URL
+```
+# Required – API URL
 NEXT_PUBLIC_POCKETBASE_URL=https://api.dev.prometheus.buildfutures.ai
 
-# Optional - API keys (if needed locally)
+# Optional – local API keys
 GEMINI_API_KEY=your-key
 OPENROUTER_API_KEY=your-key
 ```
 
-### DEV VPS (Dokploy Environment)
+### DEV VPS (Dokploy DEV service)
 
-```bash
+```
 ADMIN_EMAIL=dev-admin@prometheus.buildfutures.ai
 ADMIN_PASSWORD=DevPassword123!
 PB_ENCRYPTION_KEY=dev-encryption-key-32-bytes
 NEXT_PUBLIC_POCKETBASE_URL=https://api.dev.prometheus.buildfutures.ai
-GEMINI_API_KEY=your-key
-OPENROUTER_API_KEY=your-key
+GEMINI_API_KEY=your-dev-key
+OPENROUTER_API_KEY=your-dev-key
 ```
 
-### PROD VPS (Dokploy Environment)
+### PROD VPS (Dokploy PROD service)
 
-```bash
+```
 ADMIN_EMAIL=admin@prometheus.buildfutures.ai
 ADMIN_PASSWORD=<secure-production-password>
 PB_ENCRYPTION_KEY=<secure-production-key>
 NEXT_PUBLIC_POCKETBASE_URL=https://api.prometheus.buildfutures.ai
-GEMINI_API_KEY=your-key
-OPENROUTER_API_KEY=your-key
+GEMINI_API_KEY=your-prod-key
+OPENROUTER_API_KEY=your-prod-key
 ```
 
 ---
 
-## ⚠️ Important Notes
+## ⚠️ Important notes
 
-### Database Separation
+### Database separation
 
-- **DEV database**: Test freely, can be reset anytime
-- **PROD database**: Real users, never test here
+- DEV database: safe for experiments; can be reset.  
+- PROD database: real users; never treat as a playground.
 
-### Schema Changes
+### Schema changes
 
-1. Make schema changes in DEV PocketBase Admin
-2. Test thoroughly
-3. Apply same changes to PROD PocketBase Admin after deploy
+1. Apply and test schema changes on DEV PocketBase first.  
+2. After validation, apply equivalent changes to PROD PocketBase.
 
-### API Keys
+### API keys
 
-- Consider using separate API keys for DEV vs PROD
-- Easier to track usage and costs
+- Prefer separate keys for DEV vs PROD for better monitoring and cost control.
 
 ---
 
-## ✅ Checklist
+## ✅ Checklists
 
-### Initial Setup (One-time)
+### Initial setup (one‑time)
 
-- [ ] Create `develop` branch on GitHub
-- [ ] Create DEV DNS records
-- [ ] Create DEV Compose service in Dokploy
-- [ ] Set DEV environment variables
-- [ ] Deploy DEV environment
-- [ ] Create DEV admin account in PocketBase
-- [ ] Create `frontend/.env.local` file
+- [ ] `develop` branch created and pushed.  
+- [ ] DEV DNS records created.  
+- [ ] DEV Dokploy service created and wired to `develop`.  
+- [ ] DEV environment variables configured.  
+- [ ] DEV environment deployed and reachable.  
+- [ ] DEV PocketBase admin created.  
+- [ ] `frontend/.env.local` created.
 
-### Daily Development
+### Daily development
 
-- [ ] Pull latest `develop` branch
-- [ ] Run `npm run dev` in frontend
-- [ ] Make changes, test locally
-- [ ] Push to `develop` when ready
-- [ ] Test on DEV VPS environment
-- [ ] Merge to `main` when approved
+- [ ] Pull latest `develop`.  
+- [ ] Run `npm run dev` in `frontend`.  
+- [ ] Develop and test locally against DEV backend.  
+- [ ] Push to `develop` when ready and test on DEV VPS.  
+- [ ] Merge to `main` only after QA and checks.  
 
 ---
 
 ## 🐛 Troubleshooting
 
-### "Network Error" when calling API
+### “Network Error” calling API
 
-- Check NEXT_PUBLIC_POCKETBASE_URL in .env.local
-- Verify DEV PocketBase is running on VPS
-- Check browser console for CORS errors
+- Check `NEXT_PUBLIC_POCKETBASE_URL` in `.env.local`.  
+- Ensure DEV PocketBase container is healthy on VPS.  
+- Inspect browser console and network tab for HTTPS/CORS issues.
 
 ### Changes not reflecting
 
-- Clear browser cache
-- Restart `npm run dev`
-- Check correct branch is deployed
+- Clear browser cache / hard reload.  
+- Restart `npm run dev`.  
+- Check that the correct branch (`develop` vs `main`) is deployed in Dokploy.
 
 ### Different data between environments
 
-- This is expected! DEV and PROD have separate databases
-- Schema changes need to be applied to both
+- Expected: DEV and PROD databases are separate.  
+- Remember to replicate required schema changes across both once tested.
 
 ---
 
-**Last Updated:** 2025-12-17
+**Last Updated:** 2025‑12‑18 (aligned with Dokploy, PocketBase v0.34.2, and Git workflow).

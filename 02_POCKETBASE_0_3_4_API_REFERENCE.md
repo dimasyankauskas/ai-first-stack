@@ -1,335 +1,379 @@
-# 📘 PocketBase v0.34.2 Complete API Reference
+Here is a cleaned‑up, version‑correct, and AI‑safe rewrite of **02_POCKETBASE_0_3_4_API_REFERENCE.md** that stays consistent with your other docs.[1][2]
 
-**The ONLY guide you need for PocketBase v0.34.2+**
+***
 
-**For:** All fresh projects | Latest API | Future-proof
+```md
+# 📘 PocketBase v0.34.2+ API Reference
+
+The **primary guide** for PocketBase **v0.34.2+** used in your AI‑First Stack.
+
+For: all new projects using PocketBase v0.34.x, with JavaScript hooks and custom routes.
+
+> This guide assumes you are following `AI_SYSTEM_INSTRUCTIONS.md` (no `dao()`, strict hook rules, schema discipline). [file:43]
 
 ---
 
 ## 🎯 Critical Changes from v0.22 → v0.34.2
 
-### The Big Picture
+### Big picture
 
-1.  **NO `dao()`** - Everything is on `$app`.
-2.  **NO `SchemaField`** - Use Typed Fields (`TextField`, `RelationField`, etc.).
-3.  **`collection.schema`** is now **`collection.fields`**.
+1. **No `dao()`** – all operations are on `$app`.
+2. **No `SchemaField`** – use typed fields (`TextField`, `RelationField`, etc.).
+3. **`collection.schema` → `collection.fields`** – fields list.
 
-```javascript
-// ❌ v0.22 (OLD - Don't use)
+```
+// ❌ v0.22 (OLD – do not use)
 $app.dao().saveRecord()
 collection.schema.addField(new SchemaField({...}))
 
-// ✅ v0.34.2 (NEW - Use this!)
-$app.save()
+// ✅ v0.34.2+ (NEW – use this)
+$app.save(recordOrCollection)
 collection.fields.add(new TextField({...}))
 ```
 
 ---
 
-## 📚 Complete API Reference
+## 1. Database Operations
 
-### 1. Database Operations
+### 1.1 Finding records
 
-#### Finding Records
-
-```javascript
+```
 // Find by ID
 const record = $app.findRecordById("posts", "RECORD_ID");
 
 // Find first match
 const record = $app.findFirstRecordByFilter("posts", "status = 'active'");
 
-// Find all matching
-const records = $app.findRecordsByFilter("posts", "user = 'USER_ID'", "-created", 10);
-//                                                    filter      sort   limit
+// Find all matching (with sort + limit)
+const records = $app.findRecordsByFilter(
+  "posts",
+  "user = 'USER_ID'",
+  "-created", // sort
+  10          // limit
+);
 
 // Count records
 const count = $app.countRecords("posts", "status = 'published'");
 
-// Query builder (advanced)
+// Query builder with $dbx
 const records = $app.findRecordsByQuery(
-    "posts",
-    $dbx.exp("status = {:status} AND views > {:min}", {
-        status: "active",
-        min: 100
-    })
+  "posts",
+  $dbx.exp("status = {:status} AND views > {:min}", {
+    status: "active",
+    min: 100,
+  })
 );
 ```
 
-#### Saving Records
+### 1.2 Saving records
 
-```javascript
+```
 // Create new record
-const collection = $app.findCollectionByNameOrId("posts");
-const record = new Record(collection);
+const posts = $app.findCollectionByNameOrId("posts");
+const record = new Record(posts);
+
 record.set("title", "Hello World");
 record.set("content", "My first post");
-record.set("author", $app.authRecord().id);
+
+// In hooks/routes with auth middleware, use e.auth / info.auth:
+record.set("author", e.auth.id);
+
 $app.save(record);
 
 // Update existing record
-const record = $app.findRecordById("posts", "xyz");
-record.set("title", "Updated Title");
-$app.save(record);
+const recordToUpdate = $app.findRecordById("posts", "xyz");
+recordToUpdate.set("title", "Updated Title");
+$app.save(recordToUpdate);
 
-// Increment/decrement (modifiers)
-record.set("views+", 1);     // Increment
-record.set("likes-", 1);     // Decrement
-$app.save(record);
+// Increment/decrement numeric fields
+recordToUpdate.set("views+", 1);  // increment
+recordToUpdate.set("likes-", 1);  // decrement
+$app.save(recordToUpdate);
 ```
 
-#### Deleting Records
+### 1.3 Deleting records
 
-```javascript
+```
 const record = $app.findRecordById("posts", "xyz");
 $app.delete(record);
 ```
 
 ---
 
-### 2. Collections
+## 2. Collections
 
-#### Finding Collections
+### 2.1 Finding collections
 
-```javascript
+```
 // By name or ID
 const collection = $app.findCollectionByNameOrId("posts");
 
 // Check if exists
 let exists = false;
 try {
-    $app.findCollectionByNameOrId("posts");
-    exists = true;
-} catch (e) {
-    exists = false;
+  $app.findCollectionByNameOrId("posts");
+  exists = true;
+} catch (_) {
+  exists = false;
 }
 ```
 
-#### Creating/Updating Collections
+### 2.2 Creating/updating collections (typed fields)
 
-```javascript
-// Create new collection
+```
 const collection = new Collection();
 collection.name = "posts";
-collection.type = "base"; // or "auth" or "view"
+collection.type = "base"; // "base" | "auth" | "view"
 
-// Set privacy rules
+// Access rules
 collection.listRule = "@request.auth.id != \"\"";
 collection.viewRule = "@request.auth.id != \"\"";
 collection.createRule = "@request.auth.id != \"\"";
 collection.updateRule = "@request.auth.id = author";
 collection.deleteRule = "@request.auth.id = author";
 
-// Add fields (v0.34.2+: Use Typed Fields, NOT SchemaField)
+// Typed fields (v0.34.x)
 collection.fields.add(new TextField({
-    name: "title",
-    required: true,
-    max: 200
+  name: "title",
+  required: true,
+  max: 200,
 }));
 
 collection.fields.add(new RelationField({
-    name: "author",
-    required: true,
-    collectionId: "USERS_COLLECTION_ID",
-    maxSelect: 1,
-    cascadeDelete: false
+  name: "author",
+  required: true,
+  collectionId: "USERS_COLLECTION_ID",
+  maxSelect: 1,
+  cascadeDelete: false,
 }));
 
-// Save collection
 $app.save(collection);
 ```
 
+> Remember: in v0.34.x you manipulate `collection.fields` (a fields list), not `collection.schema`. [file:46]
+
 ---
 
-### 3. File Handling
+## 3. File Handling
 
-#### Uploading Files
+### 3.1 Uploading files (from filesystem)
 
-```javascript
+```
 // Single file
 record.set("avatar", $filesystem.fileFromPath("/path/to/file.jpg"));
 
-// Multiple files
+// Multiple files (multi-file field)
 record.set("gallery", [
-    $filesystem.fileFromPath("/path/to/img1.jpg"),
-    $filesystem.fileFromPath("/path/to/img2.jpg")
+  $filesystem.fileFromPath("/path/to/img1.jpg"),
+  $filesystem.fileFromPath("/path/to/img2.jpg"),
 ]);
 
-// From uploaded files in route
+$app.save(record);
+```
+
+### 3.2 Uploading from request (route)
+
+```
 routerAdd("POST", "/upload", (e) => {
-    const files = e.findUploadedFiles("file");  // "file" is form field name
-    
-    const record = new Record($app.findCollectionByNameOrId("uploads"));
-    record.set("file", files[0]);  // First file
+  const files = e.findUploadedFiles("file"); // "file" is form field name
+
+  if (!files || files.length === 0) {
+    throw new BadRequestError("No file provided");
+  }
+
+  const uploads = $app.findCollectionByNameOrId("uploads");
+  const record = new Record(uploads);
+  record.set("file", files);
+
+  try {
     $app.save(record);
-    
     return e.json(200, { id: record.id });
+  } catch (err) {
+    throw new BadRequestError(`Upload failed: ${err.message}`);
+  }
 });
 ```
 
 ---
 
-###  4. Event Hooks
+## 4. Event Hooks
 
-#### Hook Structure (NEW in v0.23)
+> Hooks are **high‑risk**: always follow your `AI_SYSTEM_INSTRUCTIONS.md` rules (`e.next()` and collection filters). [file:43]
 
-```javascript
-// ✅ v0.23 pattern - use e.next()
+### 4.1 Basic hook structure
+
+```
+// v0.23+ pattern: use e.next()
 onBootstrap((e) => {
-    // Code BEFORE e.next() runs BEFORE bootstrap
-    console.log("Before bootstrap");
-    
-    e.next();  // Continue execution chain
-    
-    // Code AFTER e.next() runs AFTER bootstrap
-    console.log("After bootstrap complete");
+  // Code BEFORE e.next() runs before bootstrap
+  console.log("Before bootstrap");
+
+  e.next(); // continue execution chain – MUST be called
+
+  // Code AFTER e.next() runs after bootstrap
+  console.log("After bootstrap complete");
 });
 ```
 
-#### Common Hooks
+### 4.2 Common hooks
 
-```javascript
+```
 // Application lifecycle
-onBootstrap((e) => { e.next(); /* init code */ });
+onBootstrap((e) => { e.next(); /* init */ });
 onServe((e) => { e.next(); /* server start */ });
 onTerminate((e) => { e.next(); /* cleanup */ });
 
-// Record operations
-onRecordCreate((e) => {
-    // Before record creation
-    const record = e.record;
-    console.log("Creating:", record.get("title"));
-    e.next();
-});
+// Record lifecycle – ALWAYS filter by collection
+onRecordBeforeCreateRequest((e) => {
+  const record = e.record;
+  console.log("Creating:", record.get("title"));
+  e.next();
+}, "posts");
 
 onRecordAfterCreateSuccess((e) => {
-    // After record created successfully
-    console.log("Created:", e.record.id);
-});
+  console.log("Created:", e.record.id);
+}, "posts");
 
-onRecordUpdateRequest((e) => {
-    // Validate before update
-    if (e.record.get("status") === "locked") {
-        throw new BadRequestError("Cannot update locked record");
-    }
-    e.next();
-});
+onRecordBeforeUpdateRequest((e) => {
+  if (e.record.get("status") === "locked") {
+    throw new BadRequestError("Cannot update locked record");
+  }
+  e.next();
+}, "posts");
 
 // Auth hooks
 onRecordAuthWithPasswordRequest((e) => {
-    console.log("Login attempt:", e.record.get("email"));
-    e.next();
+  console.log("Login attempt:", e.record.get("email"));
+  e.next();
+}, "users");
+```
+
+### 4.3 Validation hooks
+
+```
+onRecordValidate((e) => {
+  if (e.record.collection().name === "posts") {
+    const title = e.record.get("title");
+    if (!title || title.length < 5) {
+      throw new ValidationError("title", "Title must be at least 5 characters");
+    }
+  }
+  e.next();
 });
 ```
+
+> Always pass the collection filter (`"posts"`, `"users"`, etc.) to `onRecord*` hooks to avoid running them on every collection. [file:43]
 
 ---
 
-### 5. Routing (Custom Endpoints)
+## 5. Routing (Custom Endpoints)
 
-#### Basic Routes
+### 5.1 Basic routes
 
-```javascript
-// ✅ v0.23 syntax - {param} NOT :param
+```
+// v0.23+ path params: {name}, not :name
 routerAdd("GET", "/hello/{name}", (e) => {
-    const name = e.request.pathValue("name");  // Get path parameter
-    
-    return e.json(200, { message: `Hello ${name}!` });
+  const name = e.request.pathValue("name");
+  return e.json(200, { message: `Hello ${name}!` });
 });
 
-// POST with body
+// POST route with body
 routerAdd("POST", "/api/create", (e) => {
-    const info = e.requestInfo();
-    const body = info.body;  // v0.23: .body instead of .data
-    
-    const record = new Record($app.findCollectionByNameOrId("posts"));
-    record.set("title", body.title);
-    record.set("content", body.content);
-    $app.save(record);
-    
-    return e.json(200, { id: record.id });
-});
+  const info = e.requestInfo();
+  const body = info.body; // in v0.34.x, .body is the parsed body (if JSON)
+
+  if (!body.title) {
+    throw new BadRequestError("Title is required");
+  }
+
+  const posts = $app.findCollectionByNameOrId("posts");
+  const record = new Record(posts);
+  record.set("title", body.title);
+  record.set("content", body.content || "");
+  record.set("author", info.auth?.id); // requires auth middleware
+
+  $app.save(record);
+
+  return e.json(200, { id: record.id });
+}, $apis.requireAuth());
 ```
 
-#### Middleware
+> If needed, you can use `info.bodyAsText` plus `JSON.parse` for full control over decoding.
 
-```javascript
+### 5.2 Middleware
+
+```
 // Require authentication
 routerAdd("GET", "/protected", (e) => {
-    return e.json(200, { user: e.auth.id });
+  return e.json(200, { userId: e.auth.id });
 }, $apis.requireAuth());
 
-// Require admin
+// Require superuser/admin
 routerAdd("GET", "/admin-only", (e) => {
-    return e.json(200, { message: "Admin access" });
+  return e.json(200, { message: "Admin access" });
 }, $apis.requireSuperuser());
 ```
 
-#### Request Info
+### 5.3 Request info helpers
 
-```javascript
+```
 routerAdd("POST", "/api/endpoint", (e) => {
-    const info = e.requestInfo();
-    
-    // Body (v0.23: .body instead of .data)
-    const body = info.body;
-    const title = body.title;
-    
-    // Query parameters
-    const page = info.query.page || "1";
-    
-    // Headers
-    const auth = info.headers["authorization"];
-    
-    // Auth user
-    const user = e.auth;  // or info.auth
-    
-    return e.json(200, { received: true });
+  const info = e.requestInfo();
+
+  const body = info.body;  // v0.23+ body
+  const title = body.title;
+
+  const page = info.query.page || "1";             // query params
+  const authHeader = info.headers["authorization"]; // headers
+  const user = info.auth;                          // authenticated user (if any)
+
+  return e.json(200, { received: true });
 });
 ```
 
 ---
 
-### 6. HTTP Requests (Calling External APIs)
+## 6. HTTP Requests (Calling External APIs)
 
-```javascript
+```
 routerAdd("GET", "/fetch-data", (e) => {
-    const res = $http.send({
-        url: "https://api.example.com/data",
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer TOKEN",
-            "Content-Type": "application/json"
-        }
-    });
-    
-    if (res.statusCode !== 200) {
-        throw new BadRequestError("API request failed");
-    }
-    
-    const data = res.json;
-    return e.json(200, data);
+  const res = $http.send({
+    url: "https://api.example.com/data",
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer TOKEN",
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.statusCode !== 200) {
+    throw new BadRequestError("API request failed");
+  }
+
+  const data = res.json;
+  return e.json(200, data);
 });
 
-// POST request
+// POST request example
 const res = $http.send({
-    url: "https://api.example.com/create",
-    method: "POST",
-    body: JSON.stringify({ name: "Test" }),
-    headers: { "Content-Type": "application/json" }
+  url: "https://api.example.com/create",
+  method: "POST",
+  body: JSON.stringify({ name: "Test" }),
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
 ---
 
-### 7. Utilities
+## 7. Utilities
 
-#### Security
+### 7.1 Security helpers
 
-```javascript
-// Generate random string
+```
+// Random string
 const token = $security.randomString(32);
 
-// Generate random string (alphanumeric only)
+// Random string with custom alphabet
 const code = $security.randomStringWithAlphabet(6, "0123456789");
 
 // Hash password
@@ -339,215 +383,130 @@ const hash = $security.hash("mypassword");
 const isValid = $security.hashCheck("mypassword", hash);
 ```
 
-#### Tokens/JWT
+### 7.2 JWT helpers
 
-```javascript
-// Parse JWT
+```
+// Parse JWT (without verification)
 const claims = $security.parseUnverifiedJWT("TOKEN_STRING");
 
 // Create JWT
-const token = $security.createJWT({
+const token = $security.createJWT(
+  {
     userId: "123",
-    exp: $security.timestamp() + 3600
-}, "SECRET_KEY");
+    exp: $security.timestamp() + 3600,
+  },
+  "SECRET_KEY"
+);
+```
+
+### 7.3 Admin management (CLI)
+
+Run inside the PocketBase container or on the server:
+
+```
+# Create admin user
+/pb/pocketbase admin create admin@example.com "secure-password"
+
+# Update admin password
+/pb/pocketbase admin update admin@example.com "new-password"
 ```
 
 ---
 
-## 🔄 Migration Quick Reference
+## 8. Migration Quick Reference (v0.22 → v0.34.x)
 
-| Task | v0.22 (OLD) | v0.23 (NEW) |
-|------|-------------|-------------|
-| Find record | `$app.dao().findRecordById()` | `$app.findRecordById()` |
-| Save record | `$app.dao().saveRecord(record)` | `$app.save(record)` |
-| Delete record | `$app.dao().deleteRecord(record)` | `$app.delete(record)` |
-| Find collection | `$app.dao().findCollectionByNameOrId()` | `$app.findCollectionByNameOrId()` |
-| Save collection | `$app.dao().saveCollection()` | `$app.save(collection)` |
-| Hook pattern | `onAfterBootstrap((e) => {})` | `onBootstrap((e) => { e.next(); })` |
-| Route params | `"/hello/:name"` | `"/hello/{name}"` |
-| Request data | `info.data` | `info.body` |
-| Collection schema | `collection.schema` | Still `collection.fields` ✅ |
-
----
-
-## 📝 Complete Schema Enforcer Template (v0.23)
-
-```javascript
-/// <reference path="../pb_data/types.d.ts" />
-
-onBootstrap((e) => {
-    e.next();  // Run after bootstrap
-    
-    console.log("[SCHEMA] Starting validation...");
-    
-    // Get users collection
-    const users = $app.findCollectionByNameOrId("users");
-    const usersId = users.id;
-    
-    // Helper function
-    const ensureCollection = (config) => {
-        let collection;
-        try {
-            collection = $app.findCollectionByNameOrId(config.name);
-        } catch (e) {
-            collection = new Collection();
-            collection.name = config.name;
-            collection.type = config.type || "base";
-        }
-        
-        // Set rules
-        collection.listRule = config.listRule;
-        collection.viewRule = config.viewRule;
-        collection.createRule = config.createRule;
-        collection.updateRule = config.updateRule;
-        collection.deleteRule = config.deleteRule;
-        
-        // Create Field Helper (v0.34.2+)
-        const createField = (f) => {
-             const opts = { name: f.name, required: f.required, ...f.options };
-             switch(f.type) {
-                 case "text": return new TextField(opts);
-                 case "relation": return new RelationField(opts);
-                 case "select": return new SelectField(opts);
-                 case "bool": return new BoolField(opts);
-                 case "number": return new NumberField(opts);
-                 case "date": return new DateField(opts);
-                 case "json": return new JSONField(opts);
-                 // Add others as needed
-                 default: throw new Error("Unknown type: " + f.type);
-             }
-        };
-
-        // Clear and add fields
-        // v0.34.2: collection.fields is a FieldsList
-        const existing = collection.fields.clone();
-        for (const f of existing) {
-            if (!f.system) collection.fields.removeById(f.id);
-        }
-        
-        if (config.schema) {
-            config.schema.forEach(fieldConfig => {
-                collection.fields.add(createField(fieldConfig));
-            });
-        }
-        
-        $app.save(collection);
-        console.log(`[SCHEMA] ✓ ${config.name}`);
-        return collection;
-    };
-    
-    // Define collections
-    const posts = ensureCollection({
-        name: "posts",
-        type: "base",
-        schema: [
-            { name: "title", type: "text", required: true, options: { max: 200 } },
-            { name: "content", type: "text", options: {} },
-            { name: "author", type: "relation", required: true, options: { 
-                collectionId: usersId, 
-                maxSelect: 1,
-                cascadeDelete: false
-            }}
-        ],
-        listRule: "@request.auth.id != \"\"",
-        viewRule: "@request.auth.id != \"\"",
-        createRule: "@request.auth.id != \"\"",
-        updateRule: "@request.auth.id = author",
-        deleteRule: "@request.auth.id = author"
-    });
-    
-    console.log("[SCHEMA] Complete!");
-});
-```
+| Task                | v0.22 (OLD)                         | v0.34.x (NEW)                                |
+|---------------------|-------------------------------------|----------------------------------------------|
+| Find record         | `$app.dao().findRecordById()`       | `$app.findRecordById()`                      |
+| Save record         | `$app.dao().saveRecord(record)`     | `$app.save(record)`                          |
+| Delete record       | `$app.dao().deleteRecord(record)`   | `$app.delete(record)`                        |
+| Find collection     | `$app.dao().findCollectionByNameOrId()` | `$app.findCollectionByNameOrId()`        |
+| Save collection     | `$app.dao().saveCollection()`       | `$app.save(collection)`                      |
+| Hook pattern        | `onAfterBootstrap((e) => {})`       | `onBootstrap((e) => { e.next(); })`          |
+| Route params        | `"/hello/:name"`                    | `"/hello/{name}"`                            |
+| Request data        | `info.data`                         | `info.body`                                  |
+| Collection schema   | `collection.schema`                 | `collection.fields`                          |
 
 ---
 
-## 🎯 Best Practices
+## 9. Best Practices
 
-### 1. Always Use `e.next()`
+### 9.1 Always use `e.next()`
 
-```javascript
-// ✅ CORRECT
+```
+// ✅ Correct
 onBootstrap((e) => {
-    e.next();  // Always call this
-    // Your code here
+  e.next();  // Always call this
+  // Your code here
 });
 
-// ❌ WRONG - Will break execution chain
+// ❌ Wrong – breaks execution chain
 onBootstrap((e) => {
-    // Missing e.next()!
-    console.log("This will cause issues");
+  console.log("This will cause issues"); // missing e.next()
 });
 ```
 
-### 2. Error Handling
+### 9.2 Error handling
 
-```javascript
+```
 routerAdd("POST", "/api/create", (e) => {
-    const info = e.requestInfo();
-    
-    if (!info.body.title) {
-        throw new BadRequestError("Title is required");
-    }
-    
-    try {
-        const record = new Record($app.findCollectionByNameOrId("posts"));
-        record.set("title", info.body.title);
-        $app.save(record);
-        return e.json(200, { id: record.id });
-    } catch (err) {
-        throw new BadRequestError(`Failed to create: ${err}`);
-    }
+  const info = e.requestInfo();
+
+  if (!info.body.title) {
+    throw new BadRequestError("Title is required");
+  }
+
+  try {
+    const posts = $app.findCollectionByNameOrId("posts");
+    const record = new Record(posts);
+    record.set("title", info.body.title);
+    $app.save(record);
+
+    return e.json(200, { id: record.id });
+  } catch (err) {
+    throw new BadRequestError(`Failed to create: ${err.message}`);
+  }
 });
 ```
 
-### 3. Type Safety with TypeScript
+### 9.3 Type safety with `types.d.ts`
 
-```javascript
+```
 /// <reference path="../pb_data/types.d.ts" />
 
 // PocketBase auto-generates types for:
-// - $app
-// - $http
-// - $security
-// - All your collections
-
-// This gives you autocomplete in VS Code!
+// - $app, $http, $security, $apis
+// - All your collections and fields
+// This gives autocomplete and type hints in VS Code.
 ```
 
 ---
 
-## ⚡ Quick Snippets
+## 10. Quick Snippets
 
-### Create Record
-```javascript
-const record = new Record($app.findCollectionByNameOrId("COLLECTION"));
-record.set("fieldName", "value");
-$app.save(record);
 ```
+// Create record
+const rec = new Record($app.findCollectionByNameOrId("COLLECTION"));
+rec.set("fieldName", "value");
+$app.save(rec);
 
-### Update Record
-```javascript
-const record = $app.findRecordById("COLLECTION", "ID");
-record.set("fieldName", "newValue");
-$app.save(record);
-```
+// Update record
+const rec2 = $app.findRecordById("COLLECTION", "ID");
+rec2.set("fieldName", "newValue");
+$app.save(rec2);
 
-### Delete Record
-```javascript
-const record = $app.findRecordById("COLLECTION", "ID");
-$app.delete(record);
-```
+// Delete record
+const rec3 = $app.findRecordById("COLLECTION", "ID");
+$app.delete(rec3);
 
-### Custom Route
-```javascript
+// Simple custom route
 routerAdd("GET", "/api/hello", (e) => {
-    return e.json(200, { message: "Hello!" });
+  return e.json(200, { message: "Hello!" });
 });
 ```
 
 ---
 
-**This guide covers 99% of what you need for PocketBase v0.23.x!** 🚀
+**This guide covers effectively everything you need for PocketBase v0.34.2+ in your stack. Remember: no `dao()`, always `e.next()`, always filter hooks by collection, and never invent schema.**
+```
 
-**Remember:** NO `dao()` in v0.23 - everything is directly on `$app`!

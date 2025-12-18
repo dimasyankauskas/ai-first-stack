@@ -1,86 +1,100 @@
 # 🚀 Complete Application Development Guide
 
-**Next.js + PocketBase + Dokploy Stack**
+**Stack:** Next.js + PocketBase + Dokploy
 
 **All Lessons Learned | Production-Ready | Battle-Tested**
 
-**✨ Updated for PocketBase v0.34.2 (Latest API)**
+✨ Updated for **PocketBase v0.34.2** and your AI‑First Stack.
+
+> This guide must be used together with:
+> - `AI_SYSTEM_INSTRUCTIONS.md` (global rules, hooks “red zone”). [file:43]
+> - `01_QUICK_START.md` (project skeleton).
+> - `04_DOCKER_BUILD_GUIDE.md` (PocketBase build). [file:48]
 
 ---
 
 ## 📋 Table of Contents
 
-1. [Stack Overview](#stack-overview)
-2. [Project Setup](#project-setup)
-3. [Docker Configuration](#docker-configuration)
-4. [JavaScript Hooks (PocketBase v0.34.2)](#javascript-hooks)
-5. [Environment Variables](#environment-variables)
-6. [Deployment to Dokploy (Split Architecture)](#deployment-to-dokploy)
-7. [Troubleshooting](#troubleshooting)
-8. [Version Management](#version-management)
+1. [Stack Overview](#stack-overview)  
+2. [Project Setup](#project-setup)  
+3. [Docker Configuration](#docker-configuration)  
+4. [JavaScript Hooks (PocketBase v0.34.2)](#javascript-hooks)  
+5. [Environment Variables](#environment-variables)  
+6. [Deployment to Dokploy (Split Architecture)](#deployment-to-dokploy)  
+7. [Troubleshooting](#troubleshooting)  
+8. [Version Management](#version-management)  
 
 ---
 
 ## 🎯 Stack Overview
 
-### Current Versions (All Latest & Compatible)
+### Current versions (keep in sync)
 
-| Component | Version | LTS Until | Status |
-|-----------|---------|-----------|--------|
-| **Next.js** | 16.0.10 | N/A | ✅ Latest |
-| **PocketBase** | 0.34.2 | Current | ✅ Latest Stable |
-| **Go** | 1.25.5 | N/A | ✅ Latest |
-| **Alpine** | 3.21 | May 2026 | ✅ Stable |
+| Component    | Version  | Notes                  |
+|-------------|----------|------------------------|
+| **Next.js** | 16.x     | App Router, standalone |
+| **PocketBase** | 0.34.2 | Current stable         |
+| **Go**      | 1.22     | Builder image          |
+| **Alpine**  | 3.21     | Runtime base           |
+
+> Always confirm these in `package.json`, `Dockerfile.pocketbase`, and `Dockerfile` when starting a new project. [file:45][file:48]
 
 ### Architecture: Docker Compose via Dokploy
-We deploy services using **Docker Compose** with Traefik labels for routing.
 
-*   **Backend:** PocketBase (Go)
-*   **Frontend:** Next.js (Node)
-*   **Network:** dokploy-network (external)
+We deploy using **Docker Compose** with Traefik labels:
+
+- **Backend:** PocketBase (Go, built from `examples/base` with JS hooks).  
+- **Frontend:** Next.js (Node, standalone build).  
+- **Network:** `dokploy-network` (external, created/managed by Dokploy).  
 
 ---
 
 ## 📦 Project Setup
 
-### Directory Structure
+### Directory structure (high level)
 
 ```
 project/
-├── frontend/
+├── frontend/              # Next.js app
 │   ├── src/
 │   ├── package.json
 │   └── Dockerfile
-├── pb_hooks/
-├── Dockerfile.pocketbase
-└── .env.example
+├── pb_hooks/              # PocketBase JS hooks
+├── Dockerfile.pocketbase  # Backend Dockerfile
+├── docker-compose.yml     # local dev (optional)
+├── docker-compose.prod.yml# production (Dokploy)
+├── .env.example
+└── AI_SYSTEM_INSTRUCTIONS.md
 ```
+
+Use `01_QUICK_START.md` for detailed “from zero” steps. [file:45]
 
 ---
 
 ## 🐳 Docker Configuration
 
-### 1. Dockerfile.pocketbase (Backend)
-*Used for the Backend Service*
+### 1. `Dockerfile.pocketbase` (backend)
 
-```dockerfile
-# PocketBase Dockerfile - WITH JAVASCRIPT HOOKS SUPPORT
+> This must match the template in `04_DOCKER_BUILD_GUIDE.md`. [file:48]
+
+```
+# PocketBase Dockerfile - WITH JavaScript hooks support
 ARG CACHE_BUST=2025-12-17
 
 # Stage 1: Build PocketBase from source
-FROM golang:1.25.5-alpine AS builder
+FROM golang:1.22-alpine AS builder
 ARG POCKETBASE_VERSION=0.34.2
 ARG CACHE_BUST
 
 RUN apk add --no-cache git ca-certificates file
 
-# Clone and Build from examples/base (Required for JSVM/Hooks)
+# Clone and build from examples/base (required for jsvm/hooks)
 RUN git clone https://github.com/pocketbase/pocketbase.git /app && \
     cd /app && git checkout v${POCKETBASE_VERSION}
 
 WORKDIR /app/examples/base
 
-# CGO_ENABLED=0 is CRITICAL for reliability
+# CGO_ENABLED=0 is critical for reliability (pure Go SQLite)
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
@@ -90,6 +104,7 @@ RUN go build -v -o /pocketbase .
 # Stage 2: Runtime
 FROM alpine:3.21
 RUN apk add --no-cache ca-certificates wget
+
 COPY --from=builder /pocketbase /pb/pocketbase
 RUN chmod +x /pb/pocketbase
 
@@ -100,15 +115,14 @@ WORKDIR /pb
 EXPOSE 8090
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:8090/api/health || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost:8090/api/health || exit 1
 
 CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
 ```
 
-### 2. frontend/Dockerfile (Frontend)
-*Used for the Frontend Service*
+### 2. `frontend/Dockerfile` (frontend)
 
-```dockerfile
+```
 FROM node:24-alpine AS base
 
 FROM base AS deps
@@ -122,46 +136,106 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# CRITICAL: Build Argument for Client-Side Bundle
+# Build argument for client-side bundle
 ARG NEXT_PUBLIC_POCKETBASE_URL
 ENV NEXT_PUBLIC_POCKETBASE_URL=$NEXT_PUBLIC_POCKETBASE_URL
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+RUN mkdir .next && chown nextjs:nodejs .next
 
-# Standalone Output (Required for Docker)
+# Standalone output (required for Docker)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 EXPOSE 3000
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
 ```
 
 ---
 
+## 🧩 JavaScript Hooks (PocketBase v0.34.2) <a id="javascript-hooks"></a>
+
+> Full API: `02_POCKETBASE_0_3_4_API_REFERENCE.md` and `03_POCKETBASE_QUICK_REFERENCE.md`. [file:46][file:47]
+
+Key rules:
+
+- Always call `e.next()` in `onBootstrap` and `onRecord*` hooks.  
+- Always pass a collection filter (e.g. `"posts"`) to `onRecord*` hooks.  
+- Use `e.record.collection().name`, not `e.collection.name`.
+
+Example:
+
+```
+/// <reference path="../pb_data/types.d.ts" />
+
+onBootstrap((e) => {
+  e.next();
+  console.log("[BOOT] PocketBase started");
+});
+
+onRecordBeforeCreateRequest((e) => {
+  if (e.record.collection().name === "posts") {
+    const title = e.record.get("title");
+    if (!title || title.length < 5) {
+      throw new ValidationError("title", "Title must be at least 5 characters");
+    }
+  }
+  e.next();
+}, "posts");
+```
+
+---
+
+## 🔐 Environment Variables
+
+Keep environment definitions consistent across `.env.example`, Dokploy, and your docs.
+
+Typical `.env.example`:
+
+```
+# PocketBase public URL (production)
+NEXT_PUBLIC_POCKETBASE_URL=https://api.yourdomain.com
+
+# PocketBase admin
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASSWORD=<secure-password>
+PB_ENCRYPTION_KEY=<generated-encryption-key>
+```
+
+Generate secure values:
+
+```
+openssl rand -base64 24   # password
+openssl rand -base64 32   # encryption key
+```
+
+In Dokploy:
+
+- Set these under the Compose service’s **Environment** tab.  
+- Ensure `NEXT_PUBLIC_POCKETBASE_URL` is set both as an env var and as a build arg in Compose. [file:49]
+
+---
+
 ## 🌐 Deployment to Dokploy (Split Architecture)
 
-**Deploy via Docker Compose with Traefik labels.**
+We deploy both services via **one** `docker-compose.prod.yml` file.
 
-### docker-compose.prod.yml
-
-```yaml
+```
 version: "3.8"
 
 services:
@@ -224,37 +298,43 @@ networks:
     external: true
 ```
 
-### Deployment Steps
+Deployment steps (Dokploy):
 
-1. **Create Compose Service** → Select Docker Compose
-2. **Set Compose Path**: `./docker-compose.prod.yml`
-3. **Set Environment Variables** in Dokploy UI
-4. **Deploy!**
-
----
-
-## 🔒 Security & Optimization
-
-*   **Communication:** Frontend talks to Backend via PUBLIC URL.
-*   **Persistent Data:** Always configure volumes for Backend.
-*   **SSL:** Dokploy/Traefik handles SSL automatically via labels.
+1. Create **Compose Service** in your project.  
+2. Set **Compose Path**: `./docker-compose.prod.yml`.  
+3. Configure environment variables.  
+4. Deploy and wait for builds + Traefik certificates.
 
 ---
 
 ## 🐛 Troubleshooting
 
-### "exec format error"
-*   **Cause:** Building on ARM (Mac) vs deploying to AMD (VPS).
-*   **Fix:** Our Dockerfile forces `GOOS=linux GOARCH=amd64`.
+### `exec /pb/pocketbase: exec format error`
 
-### Frontend says "undefined" URL
-*   **Cause:** `NEXT_PUBLIC_POCKETBASE_URL` not present at BUILD time.
-*   **Fix:** Pass as build arg in docker-compose.
+- Usually means architecture mismatch (ARM build on AMD64 VPS).  
+- Fix: ensure `GOOS=linux`, `GOARCH=amd64`, and no stray build flags (see `04_DOCKER_BUILD_GUIDE.md`). [file:48]
 
-### "onBootstrap is not defined"
-*   **Cause:** Using default PocketBase binary instead of custom build.
-*   **Fix:** Build from `examples/base` directory.
+### Frontend shows `undefined` or wrong API URL
+
+- Cause: `NEXT_PUBLIC_POCKETBASE_URL` missing at **build time**.  
+- Fix: pass it as a build arg in Compose and as an env var in the container (as shown above). [file:49]
+
+### `onBootstrap is not defined` or hooks not firing
+
+- Cause: using a binary built from repo root (no `jsvm` plugin).  
+- Fix: ensure `Dockerfile.pocketbase` builds from `examples/base` exactly as in the template. [file:48]
 
 ---
 
-**Grade: A+ Split Architecture Strategy**
+## 🧬 Version Management
+
+- When you bump:
+  - PocketBase version → update `POCKETBASE_VERSION` in `Dockerfile.pocketbase` **and** your docs.  
+  - Go / Alpine versions → keep in sync with `04_DOCKER_BUILD_GUIDE.md`.  
+  - Domain pattern (`app.yourdomain.com` / `api.yourdomain.com`) → update in:
+    - `01_QUICK_START.md`  
+    - `05_DEVELOPMENT_GUIDE.md` (this file)  
+    - `docker-compose.prod.yml`  
+    - `AI_SYSTEM_INSTRUCTIONS.md`  
+
+Keep these in lockstep to avoid subtle AI and deployment inconsistencies.

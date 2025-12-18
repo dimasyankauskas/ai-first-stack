@@ -1,117 +1,141 @@
-# 🚀 PocketBase v0.34.2 - Quick Reference Card
+# 🚀 PocketBase v0.34.2+ – Quick Reference Card
 
-**One-page cheat sheet for daily development**
+One‑page cheat sheet for **daily development** with PocketBase v0.34.x in your AI‑First stack.
+
+> For detailed explanations, see `02_POCKETBASE_0_3_4_API_REFERENCE.md`. [file:46]
 
 ---
 
 ## ⚡ Key Changes from v0.22
 
-```javascript
+```
 // ❌ v0.22 (OLD)
 $app.dao().findRecordById()
 $app.dao().saveRecord()
 
-// ✅ v0.23 (NEW)
+// ✅ v0.34.x (NEW)
 $app.findRecordById()
 $app.save()
 ```
 
-**Remember:** NO `dao()` in v0.23! 🚫
+**Remember:** No `dao()` in v0.34.x. Everything goes through `$app`. 🚫
 
 ---
 
 ## 📊 Common Operations
 
-### Find Records
-```javascript
+### Find records
+
+```
 // By ID
 const record = $app.findRecordById("posts", "xyz");
 
 // By filter
-const record = $app.findFirstRecordByFilter("posts", "status = 'active'");
+const first = $app.findFirstRecordByFilter("posts", "status = 'active'");
 
 // Multiple with sort & limit
-const records = $app.findRecordsByFilter("posts", "user = 'abc'", "-created", 10);
+const records = $app.findRecordsByFilter(
+  "posts",
+  "user = 'abc'",
+  "-created",
+  10
+);
 
-// Count
-const count = $app.countRecords("posts");
+// Count (all or with filter)
+const total = $app.countRecords("posts");
+const published = $app.countRecords("posts", "status = 'published'");
 ```
 
-### Create/Update Records
-```javascript
+### Create / update records
+
+```
 // Create
-const collection = $app.findCollectionByNameOrId("posts");
-const record = new Record(collection);
+const posts = $app.findCollectionByNameOrId("posts");
+const record = new Record(posts);
 record.set("title", "Hello");
-record.set("author", $app.authRecord().id);
+
+// In routes/hooks with auth, use e.auth / info.auth:
+record.set("author", e.auth.id);
+
 $app.save(record);
 
 // Update
-const record = $app.findRecordById("posts", "xyz");
-record.set("title", "Updated");
-$app.save(record);
+const existing = $app.findRecordById("posts", "xyz");
+existing.set("title", "Updated");
+$app.save(existing);
 
-// Increment/Decrement
-record.set("views+", 1);  // Increment
-record.set("likes-", 1);  // Decrement
-$app.save(record);
+// Increment / decrement
+existing.set("views+", 1); // increment
+existing.set("likes-", 1); // decrement
+$app.save(existing);
 ```
 
-### Delete Records
-```javascript
-const record = $app.findRecordById("posts", "xyz");
-$app.delete(record);
+### Delete records
+
+```
+const toDelete = $app.findRecordById("posts", "xyz");
+$app.delete(toDelete);
 ```
 
 ---
 
-## 🎣 Hooks (v0.23 Pattern)
+## 🎣 Hooks (v0.34.x pattern)
 
-```javascript
+> Always follow your global rules: call `e.next()`, and filter hooks by collection when using `onRecord*`. [file:43]
+
+```
 // ✅ Always use e.next()
 onBootstrap((e) => {
-    e.next();  // Run after bootstrap
-    console.log("App started");
+  e.next();  // must be called
+  console.log("App started");
 });
 
-// Record creation
-onRecordCreate((e) => {
-    console.log("Creating:", e.record.get("title"));
-    e.next();
-});
+// Record creation (for "posts" only)
+onRecordBeforeCreateRequest((e) => {
+  console.log("Creating:", e.record.get("title"));
+  e.next();
+}, "posts");
 
 // After successful creation
 onRecordAfterCreateSuccess((e) => {
-    console.log("Created:", e.record.id);
-});
+  console.log("Created:", e.record.id);
+}, "posts");
 ```
 
 ---
 
 ## 🌐 Routing
 
-```javascript
-// ✅ v0.23: {param} syntax
+```
+// ✅ v0.23+ param syntax: {param}
 routerAdd("GET", "/hello/{name}", (e) => {
-    const name = e.request.pathValue("name");
-    return e.json(200, { message: `Hello ${name}!` });
+  const name = e.request.pathValue("name");
+  return e.json(200, { message: `Hello ${name}!` });
 });
 
-// POST with body
+// POST with JSON body
 routerAdd("POST", "/api/create", (e) => {
-    const info = e.requestInfo();
-    const body = info.body;  // v0.23: .body (not .data!)
-    
-    const record = new Record($app.findCollectionByNameOrId("posts"));
-    record.set("title", body.title);
-    $app.save(record);
-    
-    return e.json(200, { id: record.id });
-});
+  const info = e.requestInfo();
+  const body = info.body; // v0.23+ uses .body, not .data
 
-// With authentication
+  if (!body.title) {
+    throw new BadRequestError("Title is required");
+  }
+
+  const posts = $app.findCollectionByNameOrId("posts");
+  const record = new Record(posts);
+  record.set("title", body.title);
+  record.set("content", body.content || "");
+  record.set("author", info.auth?.id); // requires auth middleware
+
+  $app.save(record);
+
+  return e.json(200, { id: record.id });
+}, $apis.requireAuth());
+
+// With authentication (protected route)
 routerAdd("GET", "/protected", (e) => {
-    return e.json(200, { user: e.auth.id });
+  return e.json(200, { userId: e.auth.id });
 }, $apis.requireAuth());
 ```
 
@@ -119,22 +143,30 @@ routerAdd("GET", "/protected", (e) => {
 
 ## 📁 Files
 
-```javascript
+```
 // Single file
 record.set("avatar", $filesystem.fileFromPath("/path/to/file.jpg"));
 
 // Multiple files
 record.set("gallery", [
-    $filesystem.fileFromPath("/path/to/img1.jpg"),
-    $filesystem.fileFromPath("/path/to/img2.jpg")
+  $filesystem.fileFromPath("/path/to/img1.jpg"),
+  $filesystem.fileFromPath("/path/to/img2.jpg"),
 ]);
 
 // From upload
 routerAdd("POST", "/upload", (e) => {
-    const files = e.findUploadedFiles("file");
-    record.set("file", files[0]);
-    $app.save(record);
-    return e.json(200, { success: true });
+  const files = e.findUploadedFiles("file"); // form field "file"
+
+  if (!files || files.length === 0) {
+    throw new BadRequestError("No file uploaded");
+  }
+
+  const uploads = $app.findCollectionByNameOrId("uploads");
+  const record = new Record(uploads);
+  record.set("file", files);
+  $app.save(record);
+
+  return e.json(200, { success: true, id: record.id });
 });
 ```
 
@@ -142,7 +174,7 @@ routerAdd("POST", "/upload", (e) => {
 
 ## 🔐 Security
 
-```javascript
+```
 // Random string
 const token = $security.randomString(32);
 
@@ -155,113 +187,119 @@ const valid = $security.hashCheck("password", hash);
 
 ---
 
-## 🌍 HTTP Requests
+## 🌍 HTTP requests
 
-```javascript
+```
 const res = $http.send({
-    url: "https://api.example.com/data",
-    method: "GET",
-    headers: { "Authorization": "Bearer TOKEN" }
+  url: "https://api.example.com/data",
+  method: "GET",
+  headers: { Authorization: "Bearer TOKEN" },
 });
+
+if (res.statusCode !== 200) {
+  throw new BadRequestError("Request failed");
+}
 
 const data = res.json;
 ```
 
 ---
 
-## 📝 Schema Enforcer Template
+## 📝 Schema enforcer (v0.34.x – typed fields)
 
-```javascript
+```
+/// <reference path="../pb_data/types.d.ts" />
+
 onBootstrap((e) => {
-    e.next();
-    
-    const users = $app.findCollectionByNameOrId("users");
-    
-    let collection;
-    try {
-        collection = $app.findCollectionByNameOrId("posts");
-    } catch (e) {
-        collection = new Collection();
-        collection.name = "posts";
-        collection.type = "base";
-    }
-    
-    collection.listRule = "@request.auth.id != \"\"";
-    collection.createRule = "@request.auth.id != \"\"";
-    
-    collection.schema.addField(new SchemaField({
-        name: "title",
-        type: "text",
-        required: true
-    }));
-    
-    $app.save(collection);
+  e.next();
+
+  const users = $app.findCollectionByNameOrId("users");
+
+  let collection;
+  try {
+    collection = $app.findCollectionByNameOrId("posts");
+  } catch (_) {
+    collection = new Collection();
+    collection.name = "posts";
+    collection.type = "base";
+  }
+
+  collection.listRule = "@request.auth.id != \"\"";
+  collection.createRule = "@request.auth.id != \"\"";
+
+  // Clear non-system fields
+  const existing = collection.fields.clone();
+  for (const f of existing) {
+    if (!f.system) collection.fields.removeById(f.id);
+  }
+
+  // Add typed fields (no SchemaField in v0.34.x)
+  collection.fields.add(new TextField({
+    name: "title",
+    required: true,
+    max: 200,
+  }));
+
+  collection.fields.add(new RelationField({
+    name: "author",
+    required: true,
+    collectionId: users.id,
+    maxSelect: 1,
+    cascadeDelete: false,
+  }));
+
+  $app.save(collection);
 });
 ```
 
 ---
 
-## 🔄 Quick Migration Table
+## 🔄 Quick migration table (v0.22 → v0.34.x)
 
-| v0.22 | v0.23 |
-|-------|-------|
-| `$app.dao().findRecordById()` | `$app.findRecordById()` |
-| `$app.dao().saveRecord()` | `$app.save()` |
-| `$app.dao().deleteRecord()` | `$app.delete()` |
-| `"/hello/:name"` | `"/hello/{name}"` |
-| `info.data` | `info.body` |
-| `onAfterBootstrap` | `onBootstrap` with `e.next()` |
+| v0.22 (OLD)                        | v0.34.x (NEW)                    |
+|------------------------------------|----------------------------------|
+| `$app.dao().findRecordById()`      | `$app.findRecordById()`         |
+| `$app.dao().saveRecord()`          | `$app.save()`                   |
+| `$app.dao().deleteRecord()`        | `$app.delete()`                 |
+| `"/hello/:name"`                   | `"/hello/{name}"`               |
+| `info.data`                        | `info.body`                     |
+| `onAfterBootstrap`                 | `onBootstrap` with `e.next()`   |
+| `collection.schema`                | `collection.fields`             |
 
 ---
 
-## ⚠️ Common Mistakes
+## ⚠️ Common mistakes
 
-```javascript
-// ❌ DON'T: Forget e.next()
+```
+// ❌ Don't: forget e.next()
 onBootstrap((e) => {
-    console.log("Missing e.next()!");
+  console.log("Missing e.next()!");
 });
 
-// ✅ DO: Always call e.next()
+// ✅ Do: always call e.next()
 onBootstrap((e) => {
-    e.next();
-    console.log("Correct!");
+  e.next();
+  console.log("Correct!");
 });
 
-// ❌ DON'T: Use old dao() syntax
+// ❌ Don't: use old dao() syntax
 $app.dao().saveRecord(record);
 
-// ✅ DO: Direct $app calls
+// ✅ Do: use direct $app calls
 $app.save(record);
 ```
 
-Where the most detailed 0.34.x docs actually live
-Use these as your “source of truth” for 0.34.x (0.34.2 is current):​
-
-Main docs (all features, 0.34.x):
-
-https://pocketbase.io/docs/ → navigation on the left: Getting started, How to use, Records API, Auth, Rules, JS console, etc.​
-
-Records API (your 400s, filters, sort, expand):
-
-https://pocketbase.io/docs/api-records/ — full REST reference with payloads, filters, sort syntax, and examples.​
-
-Authentication / authStore (for your client code in Cursor):
-
-https://pocketbase.io/docs/authentication/ — explains tokens, auth collections, and how authWithPassword, authRefresh, etc. work.​
-
-“How to use” with JS client patterns:
-
-https://pocketbase.io/docs/how-to-use/ — global PocketBase client, auth store persistence, typical CRUD flows.​
-
-JavaScript SDK full README (very detailed, often more concrete than the site):
-
-https://github.com/pocketbase/js-sdk — install, usage, beforeSend/afterSend, all pb.collection(...).method(...) signatures.​
-
-Changelog for 0.34.0–0.34.2 (to check for breaking changes / gotchas):
-
-https://github.com/pocketbase/pocketbase/blob/master/CHANGELOG.md plus activity around 0.34.x.​
-
 ---
 
-**For full details:** [POCKETBASE_V023_API_REFERENCE.md](./POCKETBASE_V023_API_REFERENCE.md)
+## 📚 Where the full v0.34.x docs live
+
+Use these as your **external source of truth** for PocketBase v0.34.x:
+
+- Main docs: https://pocketbase.io/docs/  
+- Records API: https://pocketbase.io/docs/api-records/  
+- Authentication: https://pocketbase.io/docs/authentication/  
+- How to use (JS client patterns): https://pocketbase.io/docs/how-to-use/  
+- JS SDK README: https://github.com/pocketbase/js-sdk  
+- Changelog (0.34.x): https://github.com/pocketbase/pocketbase/blob/master/CHANGELOG.md  
+
+For deeper details, see `02_POCKETBASE_0_3_4_API_REFERENCE.md`.
