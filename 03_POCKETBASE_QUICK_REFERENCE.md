@@ -235,6 +235,33 @@ $app.dao().saveRecord(record);
 $app.save(record);
 ```
 
+Where the most detailed 0.34.x docs actually live
+Use these as your “source of truth” for 0.34.x (0.34.2 is current):​
+
+Main docs (all features, 0.34.x):
+
+https://pocketbase.io/docs/ → navigation on the left: Getting started, How to use, Records API, Auth, Rules, JS console, etc.​
+
+Records API (your 400s, filters, sort, expand):
+
+https://pocketbase.io/docs/api-records/ — full REST reference with payloads, filters, sort syntax, and examples.​
+
+Authentication / authStore (for your client code in Cursor):
+
+https://pocketbase.io/docs/authentication/ — explains tokens, auth collections, and how authWithPassword, authRefresh, etc. work.​
+
+“How to use” with JS client patterns:
+
+https://pocketbase.io/docs/how-to-use/ — global PocketBase client, auth store persistence, typical CRUD flows.​
+
+JavaScript SDK full README (very detailed, often more concrete than the site):
+
+https://github.com/pocketbase/js-sdk — install, usage, beforeSend/afterSend, all pb.collection(...).method(...) signatures.​
+
+Changelog for 0.34.0–0.34.2 (to check for breaking changes / gotchas):
+
+https://github.com/pocketbase/pocketbase/blob/master/CHANGELOG.md plus activity around 0.34.x.​
+
 ---
 
 **For full details:** [POCKETBASE_V023_API_REFERENCE.md](./POCKETBASE_V023_API_REFERENCE.md)
