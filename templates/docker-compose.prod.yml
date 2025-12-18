@@ -1,5 +1,4 @@
-# Docker Compose - Production (Dokploy)
-# Replace YOUR_DOMAIN and YOUR_PROJECT with your values
+version: "3.8"
 
 services:
   pocketbase:
@@ -10,7 +9,7 @@ services:
     ports:
       - 8090
     volumes:
-      - pocketbase_data:/pb/pb_data
+      - pocketbase-data:/pb/pb_data
     environment:
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -24,8 +23,9 @@ services:
     networks:
       - dokploy-network
     labels:
+      # ⚠️ CHANGE THESE TO YOUR PROJECT + DOMAIN
       - "traefik.enable=true"
-      - "traefik.http.routers.YOUR_PROJECT-pocketbase.rule=Host(`api.YOUR_DOMAIN`)"
+      - "traefik.http.routers.YOUR_PROJECT-pocketbase.rule=Host(`api.yourdomain.com`)"
       - "traefik.http.routers.YOUR_PROJECT-pocketbase.entrypoints=websecure"
       - "traefik.http.routers.YOUR_PROJECT-pocketbase.tls.certResolver=letsencrypt"
       - "traefik.http.services.YOUR_PROJECT-pocketbase.loadbalancer.server.port=8090"
@@ -35,12 +35,18 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
+        # ✅ CRITICAL: NEXT_PUBLIC_POCKETBASE_URL is baked into the Next.js bundle at BUILD TIME
+        # Setting it here ensures the URL is compiled into the frontend.
+        # Changing this requires a **rebuild/redeploy** of the frontend service.
         NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL}
     restart: always
     ports:
       - 3000
     environment:
-      - NEXT_PUBLIC_POCKETBASE_URL=${NEXT_PUBLIC_POCKETBASE_URL}
+      # ℹ️ Runtime environment variables ONLY
+      # Note: NEXT_PUBLIC_POCKETBASE_URL is NOT included here because it's already baked in via build arg.
+      # If you change NEXT_PUBLIC_POCKETBASE_URL in your env file and redeploy, Dokploy will rebuild
+      # the frontend with the new value. Do NOT add NEXT_PUBLIC_* vars to this section.
       - NODE_ENV=production
     depends_on:
       pocketbase:
@@ -48,16 +54,21 @@ services:
     networks:
       - dokploy-network
     labels:
+      # ⚠️ CHANGE THESE TO YOUR PROJECT + DOMAIN
       - "traefik.enable=true"
-      - "traefik.http.routers.YOUR_PROJECT-frontend.rule=Host(`YOUR_DOMAIN`) || Host(`www.YOUR_DOMAIN`)"
+      - "traefik.http.routers.YOUR_PROJECT-frontend.rule=Host(`app.yourdomain.com`)"
       - "traefik.http.routers.YOUR_PROJECT-frontend.entrypoints=websecure"
       - "traefik.http.routers.YOUR_PROJECT-frontend.tls.certResolver=letsencrypt"
       - "traefik.http.services.YOUR_PROJECT-frontend.loadbalancer.server.port=3000"
 
 volumes:
-  pocketbase_data:
+  pocketbase-data:
 
 
 networks:
   dokploy-network:
+    # ⚠️ IMPORTANT: This network must exist before deploying.
+    # Dokploy automatically creates dokploy-network on first project creation.
+    # If deploying manually or getting "network not found" error:
+    # Run: docker network create dokploy-network
     external: true
