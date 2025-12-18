@@ -1,8 +1,4 @@
-# AI Project Kickoff: System Instructions & Constraints
-
-**Copy and paste the block below as the VERY FIRST message in a new project to ensure the AI follows the correct technical patterns and avoids the 5‑hour debugging trap.**
-
----
+# Place this file @root directory of your project!!!
 
 ## 🚀 START OF AI INSTRUCTIONS 🚀
 
