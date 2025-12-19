@@ -1,0 +1,10 @@
+Here's my AI First Stack documentation folder:
+[LINK OR PATH]
+
+This contains all my system instructions, configurations, and reference docs.
+Please use these as your source of truth for this project.
+
+I need to: [YOUR TASK HERE]
+
+
+
