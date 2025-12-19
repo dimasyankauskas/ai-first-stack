@@ -40,5 +40,5 @@ next-env.d.ts
 
 # Local feedback folder (never check in)
 feedback/
-feedback_local/DOCUMENTATION_IMPROVEMENTS_QUICK_REF.md
-feedback_local/DOCUMENTATION_FEEDBACK_REPORT.md
+feedback_local/
+

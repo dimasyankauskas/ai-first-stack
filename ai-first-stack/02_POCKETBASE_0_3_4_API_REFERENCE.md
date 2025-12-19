@@ -113,9 +113,12 @@ try {
 }
 ```
 
-### 2.2 Creating/updating collections (typed fields)
+### 2.2 Creating/updating collections (⚠️ CRITICAL: Two-step process)
+
+PocketBase v0.34.x requires collections to be saved BEFORE fields can be added.
 
 ```
+// Step 1: Create empty collection with metadata
 const collection = new Collection();
 collection.name = "posts";
 collection.type = "base"; // "base" | "auth" | "view"
@@ -124,10 +127,13 @@ collection.type = "base"; // "base" | "auth" | "view"
 collection.listRule = "@request.auth.id != \"\"";
 collection.viewRule = "@request.auth.id != \"\"";
 collection.createRule = "@request.auth.id != \"\"";
-collection.updateRule = "@request.auth.id = author";
+collection.updateRule = "@request.auth.id = author";  // ⚠️ See note below
 collection.deleteRule = "@request.auth.id = author";
 
-// Typed fields (v0.34.x)
+// 🔴 CRITICAL: Save the collection BEFORE adding fields
+$app.save(collection);
+
+// Step 2: Add typed fields to the saved collection
 collection.fields.add(new TextField({
   name: "title",
   required: true,
@@ -137,15 +143,70 @@ collection.fields.add(new TextField({
 collection.fields.add(new RelationField({
   name: "author",
   required: true,
-  collectionId: "USERS_COLLECTION_ID",
+  collectionId: "_pb_users_auth_",  // See RelationField patterns below
   maxSelect: 1,
   cascadeDelete: false,
 }));
 
+// 🔴 CRITICAL: Save again after adding fields
 $app.save(collection);
 ```
 
+> **⚠️ API Rules and Fields:** If your rules reference collection fields (like `author` in the example above),
+> those fields must exist when rules are evaluated. When creating collections programmatically in hooks,
+> use simplified rules initially (e.g., `@request.auth.id != ""`), then tighten them after all fields
+> are added. Alternatively, configure field-based rules via the Admin UI after creation.
+
 > Remember: in v0.34.x you manipulate `collection.fields` (a fields list), not `collection.schema`. [file:46]
+
+---
+
+### 2.2.1 RelationField collectionId Patterns
+
+The `collectionId` parameter requires the actual collection ID string, not the collection name.
+
+```
+// ✅ For built-in users collection (special case):
+collectionId: "_pb_users_auth_"
+
+// ✅ For custom collections (must already exist!):
+collectionId: $app.findCollectionByNameOrId('other_collection').id
+
+// ❌ WRONG - String names don't work:
+collectionId: "other_collection"  // Runtime error!
+
+// ❌ WRONG - v0.22 API doesn't exist in v0.34.x:
+collectionId: $app.findCollectionByNameOrId('other_collection').getId()
+```
+
+**Important:** The referenced collection must be created and saved BEFORE adding the relation field.
+
+**Example: Creating Collections with Dependencies**
+```
+onBootstrap((e) => {
+  e.next();
+  
+  // ✅ Correct order - parent collections first:
+  
+  // 1. Create knowledge_items (no dependencies)
+  const knowledge = new Collection();
+  knowledge.name = "knowledge_items";
+  $app.save(knowledge);
+  knowledge.fields.add(new TextField({ name: "title", required: true }));
+  $app.save(knowledge);
+  
+  // 2. Create processing_jobs (references knowledge_items)
+  const jobs = new Collection();
+  jobs.name = "processing_jobs";
+  $app.save(jobs);
+  jobs.fields.add(new RelationField({
+    name: "result",
+    collectionId: $app.findCollectionByNameOrId('knowledge_items').id,  // Now exists!
+    maxSelect: 1
+  }));
+  $app.save(jobs);
+});
+```
 
 ---
 
@@ -188,6 +249,46 @@ routerAdd("POST", "/upload", (e) => {
   }
 });
 ```
+
+---
+
+### 3.3 Accessing files in hooks
+
+When files are uploaded via API or Admin UI, you can access file metadata in hooks:
+
+```
+onRecordAfterCreateSuccess((e) => {
+  // Get file field metadata
+  const uploadedFile = e.record.get('attachment');
+  
+  if (uploadedFile) {
+    // File metadata object contains:
+    console.log('Filename:', uploadedFile.name);          // Stored filename (hashed)
+    console.log('Size:', uploadedFile.size);              // Size in bytes
+    console.log('MIME type:', uploadedFile.type);         // e.g., "image/jpeg"
+    console.log('Original name:', uploadedFile.originalName); // User's filename
+    
+    // Construct file path for processing:
+    const filePath = e.record.collection().name + '/' + 
+                     e.record.id + '/' + 
+                     uploadedFile.name;
+    
+    // Example: Pass to external API for processing
+    const fileUrl = $app.settings().meta.appUrl + 
+                    '/api/files/' + filePath;
+    
+    $http.send({
+      url: "https://api.example.com/process",
+      method: "POST",
+      body: JSON.stringify({ fileUrl: fileUrl }),
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+}, "uploads");
+```
+
+> **Note:** To read file contents directly (e.g., for AI processing), use `$filesystem` utilities
+> or construct the file path as shown above and process via external services.
 
 ---
 
@@ -416,7 +517,8 @@ Run inside the PocketBase container or on the server:
 | Save record         | `$app.dao().saveRecord(record)`     | `$app.save(record)`                          |
 | Delete record       | `$app.dao().deleteRecord(record)`   | `$app.delete(record)`                        |
 | Find collection     | `$app.dao().findCollectionByNameOrId()` | `$app.findCollectionByNameOrId()`        |
-| Save collection     | `$app.dao().saveCollection()`       | `$app.save(collection)`                      |
+| Collection fields   | `collection.schema.addField()`      | `collection.fields.add(new TextField(...))`  |
+| Save collection     | `$app.dao().saveCollection()`       | `$app.save(collection)` (must save before adding fields) |
 | Hook pattern        | `onAfterBootstrap((e) => {})`       | `onBootstrap((e) => { e.next(); })`          |
 | Route params        | `"/hello/:name"`                    | `"/hello/{name}"`                            |
 | Request data        | `info.data`                         | `info.body`                                  |
@@ -498,6 +600,46 @@ $app.delete(rec3);
 routerAdd("GET", "/api/hello", (e) => {
   return e.json(200, { message: "Hello!" });
 });
+```
+
+---
+
+## 11. Common Errors and Solutions
+
+### Schema-Related Errors
+
+| Error Message | Root Cause | Solution |
+|---------------|------------|----------|
+| `Object has no member 'getId'` | Using v0.22 API pattern | Use `.id` property: `collection.id` instead of `collection.getId()` |
+| `The relation collection doesn't exist` | Wrong collectionId format or collection not created yet | Use `$app.findCollectionByNameOrId('name').id` and ensure parent collection exists first |
+| `invalid right operand 'field' - unknown field` | API rule references field that doesn't exist yet | Use simplified rules (`@request.auth.id != ""`) initially, add field-based rules after creation |
+| `SQL logic error: no such column` | Index or rule references non-existent field | Remove from collection creation; add via Admin UI later |
+| `Failed to create index` | Index attempted before fields exist | Indexes not supported in `onBootstrap` collection creation |
+
+### Hook-Related Errors
+
+| Error Message | Root Cause | Solution |
+|---------------|------------|----------|
+| Hook hangs or server deadlocks | Missing `e.next()` call | Always call `e.next()` as first line in `onBootstrap((e) => { e.next(); ... })` |
+| Changes not applying | Hook file not loaded | Verify `--hooksDir=pb_hooks` parameter and file ends with `.pb.js` |
+| `collection.schema is undefined` | Using v0.22 API | Use `collection.fields` in v0.34.x, not `collection.schema` |
+
+### Debugging Tips
+
+```
+// Log collection info
+const collection = $app.findCollectionByNameOrId('posts');
+console.log('Collection:', collection.name, 'ID:', collection.id);
+console.log('Fields:', collection.fields.length);
+
+// Log all field names
+collection.fields.forEach(field => {
+  console.log('Field:', field.name, 'Type:', field.type);
+});
+
+// Verify relation targets
+const relationField = collection.fields.find(f => f.name === 'author');
+console.log('Relates to collection:', relationField.collectionId);
 ```
 
 ---
