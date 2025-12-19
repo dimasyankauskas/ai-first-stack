@@ -1,4 +1,4 @@
-# Global Antigravity Rules (Gemini)
+# Global Antigravity Rules (Gemini) v1.0
 
 1. My tech stack for most workspaces is:
    - Next.js 16 (App Router)

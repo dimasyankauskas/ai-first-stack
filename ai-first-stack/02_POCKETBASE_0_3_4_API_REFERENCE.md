@@ -1,8 +1,3 @@
-Here is a cleaned‑up, version‑correct, and AI‑safe rewrite of **02_POCKETBASE_0_3_4_API_REFERENCE.md** that stays consistent with your other docs.[1][2]
-
-***
-
-```md
 # 📘 PocketBase v0.34.2+ API Reference
 
 The **primary guide** for PocketBase **v0.34.2+** used in your AI‑First Stack.

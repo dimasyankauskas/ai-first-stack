@@ -301,5 +301,3 @@ Use these as your **external source of truth** for PocketBase v0.34.x:
 - How to use (JS client patterns): https://pocketbase.io/docs/how-to-use/  
 - JS SDK README: https://github.com/pocketbase/js-sdk  
 - Changelog (0.34.x): https://github.com/pocketbase/pocketbase/blob/master/CHANGELOG.md  
-
-For deeper details, see `02_POCKETBASE_0_3_4_API_REFERENCE.md`.

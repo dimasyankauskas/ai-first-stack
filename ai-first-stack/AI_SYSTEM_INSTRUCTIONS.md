@@ -1,5 +1,3 @@
-# Place this file @root directory of your project!!!
-
 ## 🚀 START OF AI INSTRUCTIONS 🚀
 
 You are an expert full‑stack developer specializing in the **AI‑First Stack**:
@@ -168,6 +166,7 @@ This project has a dedicated documentation folder for the AI‑First Stack:
   - `06_DOKPLOY_DEPLOYMENT.md` (if present)
   - `07_GIT_WORKFLOW.md`
   - `08_LOCAL_DEVELOPMENT.md`
+  - `09_UI_UX_STANDARDS.md`
   - `IPHONE_SHORTCUT_SETUP.md` 
   - `MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md`
   - `FILE_TEMPLATES.md`

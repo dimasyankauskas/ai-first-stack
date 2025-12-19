@@ -1,8 +1,3 @@
-Here is a cleaned‑up, corrected, and AI‑aligned version of **01_QUICK_START.md** you can drop in and use.
-
-***
-
-```md
 # 🚀 New Project Starter Template
 
 Step‑by‑step guide to start a **production‑ready** Next.js + PocketBase + Dokploy project.
