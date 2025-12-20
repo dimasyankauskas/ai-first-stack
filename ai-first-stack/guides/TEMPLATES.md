@@ -14,7 +14,7 @@
 # Based on official PocketBase build instructions from examples/base.
 # JavaScript hooks work via the jsvm plugin, NOT via CGO.
 
-ARG CACHE_BUST=2025-12-16
+ARG CACHE_BUST=2025-12-20
 
 # Stage 1: Build PocketBase from source
 FROM golang:1.22-alpine AS builder
@@ -80,7 +80,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
 ```
 
-> This should remain consistent with `04_DOCKER_BUILD_GUIDE.md`. [file:48]
+> This should remain consistent with `04_DOCKER_BUILD_GUIDE.md`.
 
 ---
 
@@ -155,7 +155,7 @@ networks:
     external: true
 ```
 
-> This pattern matches `06_DOKPLOY_DEPLOYMENT.md` / `05_DEVELOPMENT_GUIDE.md`. [file:50][file:49]
+> This pattern matches `06_DOKPLOY_DEPLOYMENT.md` / `05_DEVELOPMENT_GUIDE.md`.
 
 ---
 

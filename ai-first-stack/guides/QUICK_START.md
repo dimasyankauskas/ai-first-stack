@@ -16,7 +16,7 @@ A complete **Docker Compose project** with:
 - ✅ Ready for Dokploy deployment (Docker Compose with Traefik)
 - ✅ Version‑pinned, production‑shaped stack
 
-> **Architecture:** One Git repo → One `docker-compose.prod.yml` → Dokploy Compose Service. See `README.md` for the architecture diagram. [file:45]
+> **Architecture:** One Git repo → One `docker-compose.prod.yml` → Dokploy Compose Service. See `README.md` for the architecture diagram.
 
 ---
 
@@ -57,7 +57,7 @@ mkdir docs
 # └── AI_SYSTEM_INSTRUCTIONS.md
 ```
 
-Copy `AI_SYSTEM_INSTRUCTIONS.md` and any shared docs from your `ai-first-stack` / `templates` project into `docs/` now if you want them in this repo. [file:43][file:45]
+Copy `AI_SYSTEM_INSTRUCTIONS.md` and any shared docs from your `ai-first-stack` / `templates` project into `docs/` now if you want them in this repo.
 
 ---
 
@@ -144,12 +144,12 @@ module.exports = nextConfig;
 
 ### 3.1 Create `Dockerfile.pocketbase`
 
-> ⚠️ Use this exact pattern; it is compatible with PocketBase v0.34.2 hooks and your Alpine runtime. [file:45]
+> ⚠️ Use this exact pattern; it is compatible with PocketBase v0.34.2 hooks and your Alpine runtime.
 
 ```
 # PocketBase Dockerfile - WITH JavaScript hooks support
 
-ARG CACHE_BUST=2025-12-17
+ARG CACHE_BUST=2025-12-20
 
 # Stage 1: Build PocketBase from source
 FROM golang:1.22-alpine AS builder
@@ -205,7 +205,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
 CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
 ```
 
-> Remember: all hooks must follow your global rules (`e.next()` first in `onBootstrap`, collection filters on `onRecord*`, `e.record.collection().name`), as described in `AI_SYSTEM_INSTRUCTIONS.md`. [file:43][file:45]
+> Remember: all hooks must follow your global rules (`e.next()` first in `onBootstrap`, collection filters on `onRecord*`, `e.record.collection().name`), as described in `AI_SYSTEM_INSTRUCTIONS.md`.
 
 ### 3.2 Example: `pb_hooks/schema_enforcer.pb.js`
 
@@ -381,7 +381,7 @@ version: "3.8"
 ref: /template/docker-compose.prod.yml
 ```
 
-> If your main template uses a different domain pattern (e.g., root domain instead of `app.`), adjust domains here and in `AI_SYSTEM_INSTRUCTIONS.md` to match. [file:42][file:43]
+> If your main template uses a different domain pattern (e.g., root domain instead of `app.`), adjust domains here and in `AI_SYSTEM_INSTRUCTIONS.md` to match.
 
 ---
 

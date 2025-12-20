@@ -12,13 +12,11 @@
 
 
 ```
-
-[1] Read /ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md (Master Tech Law)
-[2] Read /ai-first-stack/core/00_MANIFEST.md (Navigation Index)
+[1] Read /ai-first-stack/core/RULES.md (Master Tech Law)
+[2] Read /ai-first-stack/core/MANIFEST.md (Navigation Index)
 [3] Scan for project-specific overrides (README.md, .agent/ folder)
 [4] Load package.json/go.mod to learn current versions
 [5] Output: "📚 Stack loaded: Next.js [ver] / PB [ver] / Node [ver]"
-
 ```
 
 **Rule:** NEVER skip this phase. NEVER write code before completing it.
@@ -53,7 +51,7 @@
 
 ```
 
-**Rule:** If you can't verify something against the `/ref/` docs, you don't proceed.
+**Rule:** If you can't verify something against the `/reference/` docs, you don't proceed.
 
 ---
 
@@ -79,10 +77,10 @@ Before using ANY external resource, verify it through this matrix:
 
 | Resource Type | Verification Steps | If Not Found | Example |
 |---------------|-------------------|--------------|---------|
-| **npm package** | 1. Check `package.json`<br>2. Check `core/AI_SYSTEM_INSTRUCTIONS.md` | STOP. Report missing package. | `pocketbase`, `next` |
-| **PocketBase API** | 1. Check `ref/02_POCKETBASE_0_3_4_API_REFERENCE.md`<br>2. Search for v0.34 method name | STOP. Ask for source/docs. | `$app.save()`, `e.next()` |
-| **Docker image** | 1. Check `ref/04_DOCKER_BUILD_GUIDE.md`<br>2. Verify version matches stack | STOP. Ask to update guide. | `golang:1.24-alpine` |
-| **UI Standards** | 1. Check `ref/09_UI_UX_STANDARDS.md`<br>2. Verify CVA/Glassmorphism pattern | STOP. Propose "vibe" first. | CVA Variants |
+| **npm package** | 1. Check `package.json`<br>2. Check `core/RULES.md` | STOP. Report missing package. | `pocketbase`, `next` |
+| **PocketBase API** | 1. Check `reference/POCKETBASE_API.md`<br>2. Search for v0.34 method name | STOP. Ask for source/docs. | `$app.save()`, `e.next()` |
+| **Docker image** | 1. Check `reference/DOCKER_BUILD.md`<br>2. Verify version matches stack | STOP. Ask to update guide. | `golang:1.24-alpine` |
+| **UI Standards** | 1. Check `reference/UI_UX_STANDARDS.md`<br>2. Verify CVA/Glassmorphism pattern | STOP. Propose "vibe" first. | CVA Variants |
 
 ---
 
@@ -100,14 +98,15 @@ Before using ANY external resource, verify it through this matrix:
 ### **When User Says: "Build/Refactor [Next.js + PB project]"**
 
 **MUST READ (in this exact order):**
-1. `/ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md`
-2. `/ai-first-stack/core/00_MANIFEST.md`
-3. `/ai-first-stack/ref/02_POCKETBASE_0_3_4_API_REFERENCE.md` (Backend Tasks)
-4. `/ai-first-stack/ref/09_UI_UX_STANDARDS.md` (Frontend Tasks)
-5. `/ai-first-stack/01_QUICK_START.md` (For scaffolding)
+1. `/ai-first-stack/core/RULES.md`
+2. `/ai-first-stack/core/MANIFEST.md`
+3. `/ai-first-stack/reference/POCKETBASE_API.md` (Backend Tasks)
+4. `/ai-first-stack/reference/UI_UX_STANDARDS.md` (Frontend Tasks)
+5. `/ai-first-stack/guides/QUICK_START.md` (For scaffolding)
 
 **READ IF RELEVANT:**
-- `/ai-first-stack/ref/04_DOCKER_BUILD_GUIDE.md` (DevOps)
+- `/ai-first-stack/reference/DOCKER_BUILD.md` (DevOps)
+- `/ai-first-stack/guides/GIT_WORKFLOW.md` (Multi-env deployment)
 - `/ai-first-stack/archive/MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md` (Mobile/Sync logic)
 
 ---
@@ -148,11 +147,13 @@ Before using ANY external resource, verify it through this matrix:
 
 **Self-Review Checklist:**
 
-* [ ] Logic divorced from UI? (cite @09_UI_UX)
+* [ ] Logic divorced from UI? (cite @UI_UX_STANDARDS)
 * [ ] No invented packages/APIs/versions?
-* [ ] `e.next()` called FIRST in request hooks? (cite @02_PB)
+* [ ] `e.next()` called FIRST in request hooks? (cite @POCKETBASE_API)
 * [ ] package.json + package-lock.json synced?
 * [ ] No console.log in production files?
+* [ ] Environment verified? (See @GIT_WORKFLOW for QA→Prod flow)
+* [ ] Not pushing directly to `main`? (QA first per @GIT_WORKFLOW)
 
 ---
 
@@ -162,7 +163,7 @@ After every task, internally log:
 
 1. **What hallucination was attempted?**
 2. **Which STOP gate caught it?**
-3. **How to update the `/ref/` docs to prevent it forever?**
+3. **How to update the `/reference/` docs to prevent it forever?
 
 ---
 

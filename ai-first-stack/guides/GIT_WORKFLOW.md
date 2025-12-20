@@ -3,7 +3,7 @@
 Best practices for **Local → QA → Production** using Dokploy and `docker-compose.prod.yml`.
 
 > This workflow assumes:
-> - Dokploy has two Compose services (QA + Prod) pointing at the same repo and `docker-compose.prod.yml`. [file:49][file:50]
+> - Dokploy has two Compose services (QA + Prod) pointing at the same repo and `docker-compose.prod.yml`.
 
 ---
 
@@ -79,7 +79,7 @@ Best practices for **Local → QA → Production** using Dokploy and `docker-com
 | Frontend Domain  | `yourproject.com`           |
 | Backend Domain   | `api.yourproject.com`       |
 
-> Tip: In Dokploy, use separate environment variables per service (different DBs, API keys, and `NEXT_PUBLIC_POCKETBASE_URL` for QA vs Prod). [file:50]
+> Tip: In Dokploy, use separate environment variables per service (different DBs, API keys, and `NEXT_PUBLIC_POCKETBASE_URL` for QA vs Prod).
 
 ---
 

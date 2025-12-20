@@ -2,7 +2,14 @@
 
 One‑page cheat sheet for **daily development** with PocketBase v0.34.x in your AI‑First stack.
 
-> For detailed explanations, see `02_POCKETBASE_0_3_4_API_REFERENCE.md`. [file:46]
+> ⚠️ **RED ZONE** — Before writing any hook:
+> - `e.next()` must be FIRST in `onBootstrap`
+> - No `dao()` — use `$app.save()`
+> - Always filter `onRecord*` by collection
+>
+> Full rules: [RULES.md](../core/RULES.md#pocketbase-red-zone)
+
+> For detailed explanations, see [POCKETBASE_API.md](../reference/POCKETBASE_API.md).
 
 ---
 
@@ -81,7 +88,7 @@ $app.delete(toDelete);
 
 ## 🎣 Hooks (v0.34.x pattern)
 
-> Always follow your global rules: call `e.next()`, and filter hooks by collection when using `onRecord*`. [file:43]
+> Always follow your global rules: call `e.next()`, and filter hooks by collection when using `onRecord*`.
 
 ```
 // ✅ Always use e.next()

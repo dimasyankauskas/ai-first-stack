@@ -4,7 +4,8 @@ The **primary guide** for PocketBase **v0.34.2+** used in your AI‑First Stack.
 
 For: all new projects using PocketBase v0.34.x, with JavaScript hooks and custom routes.
 
-> This guide assumes you are following **@/ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md** > (no `dao()`, strict hook rules, schema discipline).
+> This guide assumes you are following **@/ai-first-stack/core/RULES.md** (no `dao()`, strict hook rules, schema discipline).
+
 ---
 
 ## 🎯 Critical Changes from v0.22 → v0.34.2
@@ -156,7 +157,7 @@ $app.save(collection);
 > use simplified rules initially (e.g., `@request.auth.id != ""`), then tighten them after all fields
 > are added. Alternatively, configure field-based rules via the Admin UI after creation.
 
-> Remember: in v0.34.x you manipulate `collection.fields` (a fields list), not `collection.schema`. [file:46]
+> Remember: in v0.34.x you manipulate `collection.fields` (a fields list), not `collection.schema`.
 
 ---
 
@@ -293,7 +294,7 @@ onRecordAfterCreateSuccess((e) => {
 
 ## 4. Event Hooks
 
-> Hooks are **high‑risk**: always follow your `AI_SYSTEM_INSTRUCTIONS.md` rules (`e.next()` and collection filters). [file:43]
+> ⚠️ Hooks are **high‑risk**: `e.next()` first, always filter by collection. See [Red Zone Rules](../core/RULES.md#pocketbase-red-zone).
 
 ### 4.1 Basic hook structure
 
@@ -357,7 +358,7 @@ onRecordValidate((e) => {
 });
 ```
 
-> Always pass the collection filter (`"posts"`, `"users"`, etc.) to `onRecord*` hooks to avoid running them on every collection. [file:43]
+> Always pass the collection filter (`"posts"`, `"users"`, etc.) to `onRecord*` hooks to avoid running them on every collection.
 
 ---
 

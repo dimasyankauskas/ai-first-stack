@@ -3,8 +3,8 @@
 Run the **frontend locally** while using a **remote PocketBase** on your VPS (DEV environment).
 
 > This assumes you have:
-> - DEV + PROD Dokploy services configured as in `06_DOKPLOY_DEPLOYMENT.md` / `07_GIT_WORKFLOW.md`. [file:50][file:51]
-> - PocketBase v0.34.2 and Next.js 16 as defined in `AI_SYSTEM_INSTRUCTIONS.md`. [file:43]
+> - DEV + PROD Dokploy services configured as in `06_DOKPLOY_DEPLOYMENT.md` / `07_GIT_WORKFLOW.md`.
+> - PocketBase v0.34.2 and Next.js 16 as defined in `AI_SYSTEM_INSTRUCTIONS.md`.
 
 ---
 
@@ -60,7 +60,7 @@ Run the **frontend locally** while using a **remote PocketBase** on your VPS (DE
 | DEV / QA     | VPS          | `dev.project.com` | `api.dev.project.com`     | DEV data   |
 | Production   | VPS          | `project.com`     | `api.project.com`         | PROD data  |
 
-For your Prometheus project, `project.com` ↔ `prometheus.buildfutures.ai`. [file:52]
+For your Prometheus project, `project.com` ↔ `prometheus.buildfutures.ai`.
 
 ---
 
@@ -92,7 +92,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000` – the frontend now talks to the **DEV** PocketBase on your VPS. [file:52]
+Open `http://localhost:3000` – the frontend now talks to the **DEV** PocketBase on your VPS.
 
 ---
 
@@ -143,7 +143,7 @@ GEMINI_API_KEY=<your-dev-key>
 OPENROUTER_API_KEY=<your-dev-key>
 ```
 
-Deploy the DEV service from Dokploy; it will build from the `develop` branch. [file:50][file:52]
+Deploy the DEV service from Dokploy; it will build from the `develop` branch.
 
 ---
 
@@ -164,7 +164,7 @@ git push -u origin develop
 
 Now:
 
-- `main` → production (Dokploy production service watches `main`). [file:51]  
+- `main` → production (Dokploy production service watches `main`).  
 - `develop` → DEV/QA (Dokploy DEV service watches `develop`).  
 
 ---

@@ -78,32 +78,36 @@ I selected these tools not just for performance, but for **developer experience*
 ## 📁 Repository Structure
 
 ```
-dokploy-stack/
+ai-first-stack/
 │
-├── 📖 DOCUMENTATION
-│   ├── 01_QUICK_START.md                 # Get started in 30 minutes
-│   ├── 02_POCKETBASE_0_3_4_API_REFERENCE.md  # Complete PocketBase API guide
-│   ├── 03_POCKETBASE_QUICK_REFERENCE.md  # One-page cheat sheet
-│   ├── 04_DOCKER_BUILD_GUIDE.md          # Docker build troubleshooting
-│   ├── 05_DEVELOPMENT_GUIDE.md           # Local & prod development
-│   ├── 06_DOKPLOY_DEPLOYMENT.md          # Production deployment guide
-│   ├── 07_GIT_WORKFLOW.md                # Git branching strategy
-│   ├── 08_LOCAL_DEVELOPMENT.md           # Local dev environment
-│   └── IPHONE_SHORTCUT_SETUP.md          # Mobile Shortcuts API
+├── 📁 core/                               # Core protocol files (ALWAYS LOAD)
+│   ├── PROTOCOL.md                        # Antigravity Protocol v7.1
+│   ├── MANIFEST.md                        # Navigation index (v2.0)
+│   └── RULES.md                           # Technical law & Red Zone rules
 │
-├── 📄 TEMPLATES
-│   └── FILE_TEMPLATES.md                 # Copy-paste ready templates
+├── 📁 reference/                          # API & standards documentation
+│   ├── POCKETBASE_API.md                  # Complete PB v0.34.2 API
+│   ├── DOCKER_BUILD.md                    # Docker build patterns
+│   └── UI_UX_STANDARDS.md                 # UI/UX & Logic Divorce
 │
-├── 📋 REFERENCES
-│   ├── MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md
-│   └── README.md                         # This file
+├── 📁 guides/                             # Step-by-step tutorials
+│   ├── QUICK_START.md                     # Get started in 30 minutes
+│   ├── POCKETBASE_CHEATSHEET.md           # One-page PB cheat sheet
+│   ├── DEVELOPMENT.md                     # Local & prod development
+│   ├── DEPLOYMENT.md                      # Dokploy production deployment
+│   ├── GIT_WORKFLOW.md                    # Git branching strategy
+│   ├── LOCAL_DEV.md                       # Local dev environment
+│   └── TEMPLATES.md                       # Copy-paste file templates
 │
-└── 🔧 STARTER FILES (in templates/)
-    ├── Dockerfile.pocketbase             # PocketBase with JS hooks
-    ├── Dockerfile.frontend               # Next.js standalone build
-    ├── docker-compose.yml                # Local development
-    ├── docker-compose.prod.yml           # Production (Dokploy)
-    └── .env.example                      # Environment template
+├── 📁 archive/                            # Reference & legacy docs
+│   ├── MOBILE_SHORTCUTS.md                # iPhone Shortcuts API
+│   └── MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md
+│
+└── 📁 templates/                          # Starter files
+    ├── Dockerfile.pocketbase              # PocketBase with JS hooks
+    ├── Dockerfile.frontend                # Next.js standalone build
+    ├── docker-compose.prod.yml            # Production (Dokploy)
+    └── .env.example                       # Environment template
 ```
 
 ***

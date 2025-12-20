@@ -1,6 +1,3 @@
-Here is the finalized, copy‑paste version of **04_DOCKER_BUILD_GUIDE.md** with all revisions applied.[1]
-
-```md
 # 🐳 PocketBase Docker Build Guide
 
 > ⚠️ **CRITICAL UPDATE (December 2024):** This guide uses the official PocketBase build method for **v0.34.2+** with JavaScript hooks.
@@ -12,8 +9,8 @@ Here is the finalized, copy‑paste version of **04_DOCKER_BUILD_GUIDE.md** with
 
 This Dockerfile must stay in sync with:
 
-- `01_QUICK_START.md` (project skeleton and Compose files). [file:45]  
-- `AI_SYSTEM_INSTRUCTIONS.md` (Alpine, `/bin/sh`, PocketBase v0.34.2 hooks). [file:43]
+- `01_QUICK_START.md` (project skeleton and Compose files).  
+- `AI_SYSTEM_INSTRUCTIONS.md` (Alpine, `/bin/sh`, PocketBase v0.34.2 hooks).
 
 ---
 
@@ -22,7 +19,7 @@ This Dockerfile must stay in sync with:
 To enable JavaScript hooks (`pb_hooks`) and standalone migrations, you **must** build from the `examples/base` directory in the PocketBase repository.
 
 - Root of the repo builds a minimal PocketBase **without plugins**.  
-- `examples/base` builds PocketBase **with the `jsvm` plugin**, which enables the JavaScript runtime used by your `.pb.js` hook files. [file:48]
+- `examples/base` builds PocketBase **with the `jsvm` plugin**, which enables the JavaScript runtime used by your `.pb.js` hook files.
 
 ---
 
@@ -35,7 +32,7 @@ Copy this into your `Dockerfile.pocketbase`:
 # Based on official PocketBase build instructions from examples/base.
 # JavaScript hooks work via the jsvm plugin, NOT via CGO.
 
-ARG CACHE_BUST=2025-12-16
+ARG CACHE_BUST=2025-12-20
 
 # Stage 1: Build PocketBase from source
 FROM golang:1.22-alpine AS builder

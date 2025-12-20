@@ -25,7 +25,7 @@ Create in project root:
 
 ```
 # PocketBase Dockerfile - WITH JAVASCRIPT HOOKS SUPPORT
-ARG CACHE_BUST=2025-12-18
+ARG CACHE_BUST=2025-12-20
 
 # Stage 1: Build PocketBase from source
 FROM golang:1.22-alpine AS builder
