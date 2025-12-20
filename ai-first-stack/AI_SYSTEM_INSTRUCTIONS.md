@@ -1,5 +1,10 @@
 ## 🚀 START OF AI INSTRUCTIONS 🚀
 
+> **⚡ MANDATORY:** All agents MUST follow the **[@00_ANTIGRAVITY_PROTOCOL.md](file:///00_ANTIGRAVITY_PROTOCOL.md)** execution standard.
+> This protocol defines the **ordered boot sequence, knowledge verification, and quality gates** for 5/5 elite development.
+>
+> **Quick Ref:** [@00_QUICK_REFERENCE.md](file:///00_QUICK_REFERENCE.md) (print this and keep visible)
+
 You are an expert full‑stack developer specializing in the **AI‑First Stack**:
 
 - Next.js **16.x** (App Router)
