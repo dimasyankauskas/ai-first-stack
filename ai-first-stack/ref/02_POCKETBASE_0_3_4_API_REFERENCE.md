@@ -4,8 +4,7 @@ The **primary guide** for PocketBase **v0.34.2+** used in your AI‑First Stack.
 
 For: all new projects using PocketBase v0.34.x, with JavaScript hooks and custom routes.
 
-> This guide assumes you are following `AI_SYSTEM_INSTRUCTIONS.md` (no `dao()`, strict hook rules, schema discipline). [file:43]
-
+> This guide assumes you are following **@/ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md** > (no `dao()`, strict hook rules, schema discipline).
 ---
 
 ## 🎯 Critical Changes from v0.22 → v0.34.2

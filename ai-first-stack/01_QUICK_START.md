@@ -4,8 +4,7 @@ Step‑by‑step guide to start a **production‑ready** Next.js + PocketBase + 
 
 **Time to complete:** ~30 minutes
 
-> This Quick Start assumes you are also using `AI_SYSTEM_INSTRUCTIONS.md` in the repo root (Next.js 16 + PocketBase v0.34.2 + Dokploy, Alpine `/bin/sh`, and strict PocketBase hook rules). [file:43]
-
+> This Quick Start assumes you are using **@/ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md** > (Next.js 16 + PocketBase v0.34.2 + Dokploy, Alpine `/bin/sh`, and strict logic rules).
 ---
 
 ## 📋 What You'll Build
@@ -298,52 +297,10 @@ onBootstrap((e) => {
 
 ## 🎯 Step 4: Local Development with Docker Compose
 
-### 4.1 `docker-compose.yml` (local dev)
+### 4.1 `docker-compose.prod.yml` (local dev)
 
 ```
-version: "3.8"
-
-services:
-  pocketbase:
-    build:
-      context: .
-      dockerfile: Dockerfile.pocketbase
-    ports:
-      - "8090:8090"
-    volumes:
-      - ./pb_data:/pb/pb_data
-      - ./pb_hooks:/pb/pb_hooks
-    environment:
-      - ADMIN_EMAIL=admin@localhost.com
-      - ADMIN_PASSWORD=admin123
-    networks:
-      - app_network
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_POCKETBASE_URL: http://localhost:8090
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_POCKETBASE_URL=http://localhost:8090
-    depends_on:
-      - pocketbase
-    networks:
-      - app_network
-
-networks:
-  app_network:
-```
-
-Run local dev:
-
-```
-docker compose up --build
-# Frontend: http://localhost:3000
-# PocketBase Admin: http://localhost:8090/_/
+ref: /template/docker-compose.prod.yml
 ```
 
 ---
@@ -398,7 +355,7 @@ If you maintain a shared `ai-first-stack` / `templates` repo:
 ```
 # Example: copy shared docs into this project
 # cp "../ai-first-stack/01_QUICK_START.md" ./docs/
-# cp "../ai-first-stack/AI_SYSTEM_INSTRUCTIONS.md" ./AI_SYSTEM_INSTRUCTIONS.md
+# cp "../ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md" ./AI_SYSTEM_INSTRUCTIONS.md
 ```
 
 ---
@@ -421,64 +378,7 @@ git push -u origin main
 ```
 version: "3.8"
 
-services:
-  pocketbase:
-    build:
-      context: .
-      dockerfile: Dockerfile.pocketbase
-    restart: always
-    ports:
-      - 8090
-    volumes:
-      - pocketbase_data:/pb/pb_data
-    environment:
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY}
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8090/api/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    networks:
-      - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.pocketbase.rule=Host(`api.yourdomain.com`)"
-      - "traefik.http.routers.pocketbase.entrypoints=websecure"
-      - "traefik.http.routers.pocketbase.tls.certResolver=letsencrypt"
-      - "traefik.http.services.pocketbase.loadbalancer.server.port=8090"
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL}
-    restart: always
-    ports:
-      - 3000
-    environment:
-      - NEXT_PUBLIC_POCKETBASE_URL=${NEXT_PUBLIC_POCKETBASE_URL}
-      - NODE_ENV=production
-    depends_on:
-      pocketbase:
-        condition: service_healthy
-    networks:
-      - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`app.yourdomain.com`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certResolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-
-volumes:
-  pocketbase_data:
-
-networks:
-  dokploy-network:
-    external: true
+ref: /template/docker-compose.prod.yml
 ```
 
 > If your main template uses a different domain pattern (e.g., root domain instead of `app.`), adjust domains here and in `AI_SYSTEM_INSTRUCTIONS.md` to match. [file:42][file:43]
