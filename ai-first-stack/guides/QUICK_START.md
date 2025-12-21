@@ -4,7 +4,7 @@ Step‑by‑step guide to start a **production‑ready** Next.js + PocketBase + 
 
 **Time to complete:** ~30 minutes
 
-> This Quick Start assumes you are using **@/ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md** > (Next.js 16 + PocketBase v0.34.2 + Dokploy, Alpine `/bin/sh`, and strict logic rules).
+> This Quick Start assumes you are using **@/ai-first-stack/core/RULES.md** > (Next.js 16 + PocketBase v0.34.2 + Dokploy, Alpine `/bin/sh`, and strict logic rules).
 ---
 
 ## 📋 What You'll Build
@@ -54,10 +54,10 @@ mkdir docs
 # ├── docker-compose.yml     (local dev)
 # ├── docker-compose.prod.yml (production)
 # ├── .env.example
-# └── AI_SYSTEM_INSTRUCTIONS.md
+# └── RULES.md
 ```
 
-Copy `AI_SYSTEM_INSTRUCTIONS.md` and any shared docs from your `ai-first-stack` / `templates` project into `docs/` now if you want them in this repo.
+Copy `RULES.md` and any shared docs from your `ai-first-stack` / `templates` project into `docs/` now if you want them in this repo.
 
 ---
 
@@ -144,68 +144,18 @@ module.exports = nextConfig;
 
 ### 3.1 Create `Dockerfile.pocketbase`
 
-> ⚠️ Use this exact pattern; it is compatible with PocketBase v0.34.2 hooks and your Alpine runtime.
+> ⚠️ Use the exact pattern from `templates/Dockerfile.pocketbase` - it is compatible with PocketBase v0.34.2 hooks and your Alpine runtime.
 
-```
-# PocketBase Dockerfile - WITH JavaScript hooks support
+**Copy from:** [`templates/Dockerfile.pocketbase`](../templates/Dockerfile.pocketbase)
 
-ARG CACHE_BUST=2025-12-20
-
-# Stage 1: Build PocketBase from source
-FROM golang:1.22-alpine AS builder
-
-ARG POCKETBASE_VERSION=0.34.2
-ARG CACHE_BUST
-
-RUN echo "=== BUILD INFO ===" && \
-    echo "Architecture: $(uname -m)" && \
-    echo "Cache: ${CACHE_BUST}" && \
-    echo "=================="
-
-RUN apk add --no-cache git ca-certificates file
-
-RUN git clone https://github.com/pocketbase/pocketbase.git /app && \
-    cd /app && \
-    git checkout v${POCKETBASE_VERSION}
-
-WORKDIR /app/examples/base
-
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
-
-RUN go build -v -o /pocketbase . && \
-    echo "=== BINARY INFO ===" && \
-    ls -la /pocketbase && \
-    file /pocketbase && \
-    echo "=================="
-
-# Stage 2: Runtime
-FROM alpine:3.21
-
-RUN apk add --no-cache ca-certificates wget
-
-COPY --from=builder /pocketbase /pb/pocketbase
-
-RUN chmod +x /pb/pocketbase && \
-    echo "=== RUNTIME VERIFY ===" && \
-    file /pb/pocketbase && \
-    echo "======================"
-
-RUN mkdir -p /pb/pb_hooks /pb/pb_data
-
-COPY pb_hooks /pb/pb_hooks
-
-WORKDIR /pb
-EXPOSE 8090
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8090/api/health || exit 1
-
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
+```bash
+# Copy the template to your project root
+cp /path/to/ai-first-stack/templates/Dockerfile.pocketbase ./Dockerfile.pocketbase
 ```
 
-> Remember: all hooks must follow your global rules (`e.next()` first in `onBootstrap`, collection filters on `onRecord*`, `e.record.collection().name`), as described in `AI_SYSTEM_INSTRUCTIONS.md`.
+> See [DOCKER_BUILD.md](../reference/DOCKER_BUILD.md) for build details and troubleshooting.
+
+> Remember: all hooks must follow your global rules (`e.next()` first in `onBootstrap`, collection filters on `onRecord*`, `e.record.collection().name`), as described in `RULES.md`.
 
 ### 3.2 Example: `pb_hooks/schema_enforcer.pb.js`
 
@@ -355,7 +305,7 @@ If you maintain a shared `ai-first-stack` / `templates` repo:
 ```
 # Example: copy shared docs into this project
 # cp "../ai-first-stack/01_QUICK_START.md" ./docs/
-# cp "../ai-first-stack/core/AI_SYSTEM_INSTRUCTIONS.md" ./AI_SYSTEM_INSTRUCTIONS.md
+# cp "../ai-first-stack/core/RULES.md" ./RULES.md
 ```
 
 ---
@@ -381,7 +331,7 @@ version: "3.8"
 ref: /template/docker-compose.prod.yml
 ```
 
-> If your main template uses a different domain pattern (e.g., root domain instead of `app.`), adjust domains here and in `AI_SYSTEM_INSTRUCTIONS.md` to match.
+> If your main template uses a different domain pattern (e.g., root domain instead of `app.`), adjust domains here and in `RULES.md` to match.
 
 ---
 

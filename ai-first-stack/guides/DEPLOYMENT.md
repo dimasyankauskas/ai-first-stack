@@ -21,50 +21,16 @@ Before deploying, ensure you have:
 
 ### 1.1 Backend: `Dockerfile.pocketbase`
 
-Create in project root:
+Create in project root by copying from the templates:
 
+**Copy from:** [`templates/Dockerfile.pocketbase`](../templates/Dockerfile.pocketbase)
+
+```bash
+# Copy the template to your project root
+cp /path/to/ai-first-stack/templates/Dockerfile.pocketbase ./Dockerfile.pocketbase
 ```
-# PocketBase Dockerfile - WITH JAVASCRIPT HOOKS SUPPORT
-ARG CACHE_BUST=2025-12-20
 
-# Stage 1: Build PocketBase from source
-FROM golang:1.22-alpine AS builder
-ARG POCKETBASE_VERSION=0.34.2
-ARG CACHE_BUST
-
-RUN apk add --no-cache git ca-certificates file
-
-# Clone and build from examples/base (Required for JS hooks)
-RUN git clone https://github.com/pocketbase/pocketbase.git /app && \
-    cd /app && git checkout v${POCKETBASE_VERSION}
-
-WORKDIR /app/examples/base
-
-# CGO_ENABLED=0 is CRITICAL for reliability and cross-platform
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
-
-RUN go build -v -o /pocketbase .
-
-# Stage 2: Runtime
-FROM alpine:3.21
-RUN apk add --no-cache ca-certificates wget
-
-COPY --from=builder /pocketbase /pb/pocketbase
-RUN chmod +x /pb/pocketbase
-
-RUN mkdir -p /pb/pb_hooks /pb/pb_data
-COPY pb_hooks /pb/pb_hooks
-
-WORKDIR /pb
-EXPOSE 8090
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:8090/api/health || exit 1
-
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
-```
+> See [DOCKER_BUILD.md](../reference/DOCKER_BUILD.md) for the complete Dockerfile, build explanation, and troubleshooting.
 
 ### 1.2 Frontend: `frontend/Dockerfile`
 

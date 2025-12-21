@@ -10,7 +10,7 @@
 This Dockerfile must stay in sync with:
 
 - `01_QUICK_START.md` (project skeleton and Compose files).  
-- `AI_SYSTEM_INSTRUCTIONS.md` (Alpine, `/bin/sh`, PocketBase v0.34.2 hooks).
+- `RULES.md` (Alpine, `/bin/sh`, PocketBase v0.34.2 hooks).
 
 ---
 

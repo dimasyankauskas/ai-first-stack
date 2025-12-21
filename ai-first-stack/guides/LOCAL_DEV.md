@@ -4,7 +4,7 @@ Run the **frontend locally** while using a **remote PocketBase** on your VPS (DE
 
 > This assumes you have:
 > - DEV + PROD Dokploy services configured as in `06_DOKPLOY_DEPLOYMENT.md` / `07_GIT_WORKFLOW.md`.
-> - PocketBase v0.34.2 and Next.js 16 as defined in `AI_SYSTEM_INSTRUCTIONS.md`.
+> - PocketBase v0.34.2 and Next.js 16 as defined in `RULES.md`.
 
 ---
 

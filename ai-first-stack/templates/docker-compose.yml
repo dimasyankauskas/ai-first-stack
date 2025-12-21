@@ -1,0 +1,55 @@
+# Docker Compose for LOCAL DEVELOPMENT
+# No Traefik labels, no external network, simple localhost ports
+#
+# Usage:
+#   docker compose up -d
+#   
+# Access:
+#   Frontend: http://localhost:3000
+#   PocketBase: http://localhost:8090
+#   PocketBase Admin: http://localhost:8090/_/
+
+version: "3.8"
+
+services:
+  pocketbase:
+    build:
+      context: .
+      dockerfile: Dockerfile.pocketbase
+    restart: unless-stopped
+    ports:
+      - "8090:8090" # Exposed to localhost
+    volumes:
+      - pocketbase-data:/pb/pb_data
+      - ./pb_hooks:/pb/pb_hooks # Hot reload hooks in dev
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@local.dev}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-localdev123}
+      - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY:-local-dev-encryption-key-32ch}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8090/api/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # For local dev, points to localhost PocketBase
+        NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL:-http://localhost:8090}
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Exposed to localhost
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+
+volumes:
+  pocketbase-data:
+
+    # No external network needed for local development
