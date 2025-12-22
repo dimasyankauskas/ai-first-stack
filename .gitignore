@@ -43,3 +43,6 @@ feedback/
 feedback_local/
 
 desktop.ini
+
+# AI Context (local only - never check in)
+.ai-context

@@ -232,7 +232,11 @@ This documentation was battle-tested on multiple production deployments:
 
 ## 📄 License
 
-MIT License – Use freely in your projects.
+Licensed under the **Apache License, Version 2.0** – See [LICENSE](LICENSE) for details.
+
+## 🔗 GitHub
+
+[![GitHub](https://img.shields.io/badge/GitHub-dimasyankauskas-181717?style=for-the-badge&logo=github)](https://github.com/dimasyankauskas/ai-first-stack)
 
 ***
 
