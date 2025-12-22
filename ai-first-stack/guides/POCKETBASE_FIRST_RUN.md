@@ -106,3 +106,87 @@ Always verify your schema before debugging application code.
 2.  Navigate to **Collections**.
 3.  Check your collection schema: Does it have all expected fields (e.g., `owner`, `timestamp`, `extracted`)?
 4.  If ONLY `id` exists → You have a Ghost Collection. Restart with the `--hooksDir` flag.
+
+---
+
+## 🔌 Frontend Integration (The "Missing Link")
+
+> [!CAUTION]
+> **The "Ghost Engine" Problem:** You started PocketBase with hooks, the schema is correct, but your frontend still falls back to `localStorage`. This happens because there's no client code connecting the frontend to PocketBase.
+
+### 1. Create the Client File
+
+Your frontend needs a `lib/pocketbase.ts` file as the **single source of truth** for the database connection.
+
+> [!TIP]
+> A production-ready template is available at [`/templates/lib/pocketbase.ts`](../templates/lib/pocketbase.ts).
+
+**Minimal Example:**
+```typescript
+import PocketBase from "pocketbase";
+
+const POCKETBASE_URL = process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090";
+
+export const pb = new PocketBase(POCKETBASE_URL);
+pb.autoCancellation(false); // Required for React 18 Strict Mode
+```
+
+### 2. Set Your Environment Variable
+
+Create/update `frontend/.env.local`:
+```
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+```
+
+### 3. Use in Your Components
+
+```typescript
+import { pb } from "@/lib/pocketbase";
+
+// Save data to PocketBase (NOT localStorage)
+const record = await pb.collection("recordings").create({
+  owner: userId,
+  audio_file: audioBlob,
+  transcript: text,
+});
+```
+
+### 4. Common Mistake: Silent Fallback
+
+**❌ BAD:** Silently fall back to localStorage if PocketBase fails.
+```typescript
+try {
+  await pb.collection("recordings").create(data);
+} catch {
+  localStorage.setItem("recordings", JSON.stringify(data)); // Silent fail!
+}
+```
+
+**✅ GOOD:** Fail loudly so you know PocketBase isn't configured.
+```typescript
+try {
+  await pb.collection("recordings").create(data);
+} catch (error) {
+  console.error("❌ PocketBase save failed:", error);
+  throw error; // Bubble up the error
+}
+```
+
+---
+
+## ✅ Full Integration Checklist
+
+Use this checklist to ensure both server AND client are properly connected:
+
+**Server-Side (PocketBase)**
+- [ ] `pb_hooks/main.pb.js` exists with schema bootstrap logic
+- [ ] Started with `--hooksDir` flag
+- [ ] Console shows "✅ Schema bootstrap complete."
+- [ ] Admin dashboard shows collections with all fields
+
+**Client-Side (Frontend)**
+- [ ] `lib/pocketbase.ts` exists and exports `pb` client
+- [ ] `.env.local` has `NEXT_PUBLIC_POCKETBASE_URL` set
+- [ ] No silent fallbacks to localStorage
+- [ ] `npm install pocketbase` has been run
+
