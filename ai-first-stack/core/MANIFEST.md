@@ -20,6 +20,8 @@
 | **Templates** | `/guides/TEMPLATES.md` | Creating new hook/comp files. |
 | **Cheatsheet**| `/guides/POCKETBASE_CHEATSHEET.md` | Quick PocketBase lookup. |
 | **Testing** | `/guides/TESTING_STRATEGY.md` | Unit, integration, E2E patterns. |
+| **Debugging** | `/guides/POCKETBASE_FIRST_RUN.md` | Debugging local PocketBase schema / "Ghost Collections". |
+| **Templates** | `/templates/pb_hooks/main.pb.js` | Server-side schema bootstrap hook template. |
 | **Archive** | `/archive/MOBILE_UPLOAD_ARCHITECTURE_REVIEW.md` | Reference for mobile-specific logic. |
 | **Archive** | `/archive/MOBILE_SHORTCUTS.md` | iPhone Shortcuts integration. |
 
